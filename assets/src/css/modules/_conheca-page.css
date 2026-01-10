@@ -1,0 +1,71 @@
+/* assets/css/modules/_conheca-page.css */
+/* ATUALIZADO (ATUAL): Aplica a nova paleta de cores e os tokens de sombra e ícones. */
+
+.nativa-conheca-hero {
+    background-color: var(--md-sys-color-surface-container);
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+}
+
+.nativa-conheca-hero h1 {
+    font-size: var(--font-size-4xl);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-md);
+}
+
+.nativa-conheca-hero p {
+    font-size: var(--font-size-lg);
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.nativa-conheca-section {
+    padding: var(--space-2xl) var(--space-lg);
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+.nativa-conheca-section h2 {
+    font-size: var(--font-size-3xl);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--md-sys-color-tertiary);
+}
+
+.nativa-conheca-feature-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+}
+
+@media (min-width: 600px) {
+    .nativa-conheca-feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.nativa-conheca-feature-item {
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: var(--space-xl);
+    border-radius: var(--border-radius-large);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.nativa-conheca-feature-item .material-symbols-rounded {
+    font-size: var(--icon-size-xl);
+    color: var(--md-sys-color-tertiary);
+    margin-bottom: var(--space-lg);
+}
+
+.nativa-conheca-feature-item h3 {
+    font-size: var(--font-size-xl);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-sm);
+}
+
+.nativa-conheca-feature-item p {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+}

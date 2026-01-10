@@ -1,0 +1,154 @@
+/* assets/css/print-styles.css */
+/* Estilos exclusivos para impressão térmica (80mm) */
+
+@media print {
+    @page {
+        margin: 0;
+        size: 80mm auto;
+    }
+    body.nativa-print-body {
+        margin: 0;
+        padding: 5px;
+    }
+}
+
+body.nativa-print-body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: #000;
+    background: #fff;
+    width: 78mm;
+    margin: 0 auto;
+}
+
+.nativa-print-body .printer-container {
+    width: 100%;
+}
+
+/* Utilitários de Texto para Impressão */
+.nativa-print-body .text-center {
+    text-align: center;
+}
+.nativa-print-body .text-left {
+    text-align: left;
+}
+.nativa-print-body .text-right {
+    text-align: right;
+}
+.nativa-print-body .text-bold {
+    font-weight: bold;
+}
+.nativa-print-body .text-lg {
+    font-size: 18px;
+}
+.nativa-print-body .text-xl {
+    font-size: 22px;
+}
+
+/* Separadores */
+.nativa-print-body .separator {
+    border-bottom: 1px dashed #000;
+    margin: 8px 0;
+    width: 100%;
+}
+.nativa-print-body .double-separator {
+    border-bottom: 2px solid #000;
+    margin: 8px 0;
+    width: 100%;
+}
+
+/* --- ESTILOS ESPECÍFICOS: COZINHA --- */
+.nativa-print-body .kitchen-ticket {
+    page-break-after: always;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc; /* Visual apenas na tela */
+}
+.nativa-print-body .kitchen-ticket:last-child {
+    page-break-after: auto;
+}
+
+/* Cabeçalho Cozinha (2 Colunas) */
+.nativa-print-body .kitchen-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.nativa-print-body .kitchen-logo-col {
+    flex: 0 0 auto;
+}
+.nativa-print-body .kitchen-logo-col img {
+    width: 50px;
+    height: auto;
+    display: block;
+}
+.nativa-print-body .kitchen-info-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+/* Nome do Cliente */
+.nativa-print-body .customer-name-centered {
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 5px 0 10px 0;
+    text-transform: uppercase;
+}
+
+/* Itens e Adicionais (Cozinha) */
+.nativa-print-body .kitchen-item-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 0;
+    line-height: 1.1;
+}
+.nativa-print-body .kitchen-item-addons {
+    font-size: 80%;
+    font-weight: bold;
+    padding-left: 0;
+    margin-top: 2px;
+    line-height: 1.1;
+}
+
+/* --- ESTILOS ESPECÍFICOS: COURIER --- */
+.nativa-print-body .courier-logo-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.nativa-print-body .courier-logo-container img {
+    max-width: 150px;
+    height: auto;
+}
+
+/* Tabela de Itens (Courier) */
+.nativa-print-body .item-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+.nativa-print-body .item-addons-courier {
+    font-size: 12px;
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+.nativa-print-body .totals-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+}
+
+.nativa-print-body .footer {
+    margin-top: 20px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: bold;
+}

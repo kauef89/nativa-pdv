@@ -1,0 +1,151 @@
+/*
+* ATUALIZAÇÃO (MINIMALISTA - PRETO/BRANCO/DOURADO):
+* - Paleta de cores de alto contraste baseada na sua solicitação.
+* - Background: Preto puro (#000000).
+* - Surfaces: Tons de cinza puro para profundidade.
+* - Primary: Branco (#FFFFFF) para CTAs principais.
+* - On-Surface: Branco (#FFFFFF) para texto principal.
+* - Tertiary: Dourado (#D4AF37) para acentos.
+*/
+:root {
+    /* Paleta Principal - Minimalista (Preto/Branco) */
+    --md-sys-color-primary: #ffffff; /* Branco (Botões Principais) */
+    --md-sys-color-on-primary: #000000; /* Preto (Texto em botões brancos) */
+    --md-sys-color-primary-container: #888888; /* Cinza Médio (Reutilizado) */
+    --md-sys-color-on-primary-container: #ffffff; /* Branco */
+
+    /* Cores de Superfície (Fundos - Alto Contraste) */
+    --md-sys-color-surface-container-lowest: #1d1d1d; /* Card (Mais escuro) */
+    --md-sys-color-surface-container-low: #2c2c2c; /* Card (Padrão) */
+    --md-sys-color-surface-container: #333333; /* Card (Médio) */
+    --md-sys-color-surface-container-high: #3e3e3e; /* Card (Hover/Alto) */
+    --md-sys-color-surface-container-highest: #4f4f4f; /* Card (Mais Alto) */
+    --md-sys-color-surface: #121212; /* Fundo principal (Quase Preto) */
+    --md-sys-color-background: #000000; /* Fundo (Preto Puro) */
+
+    /* Cores de Texto e Contorno (Monocromático) */
+    --md-sys-color-on-surface: #ffffff; /* Texto principal (Branco) */
+    --md-sys-color-on-surface-variant: #bdbdbd; /* Texto secundário (Cinza Claro) */
+    --md-sys-color-outline: #888888; /* Contorno (Cinza Médio) */
+    --md-sys-color-outline-variant: #444444; /* Contorno (Cinza Escuro) */
+
+    /* Cores Secundárias (Cinza Médio) */
+    --md-sys-color-secondary: #888888; /* Cinza Médio (Botões Secundários) */
+    --md-sys-color-on-secondary: #ffffff; /* Texto em botões cinzas */
+    --md-sys-color-secondary-container: #4f4f4f; /* Container Secundário (Cinza) */
+    --md-sys-color-on-secondary-container: #ffffff; /* Texto no container */
+
+    /* Cores Terciárias (Acento Dourado) */
+    --md-sys-color-tertiary: #d4af37; /* Dourado */
+    --md-sys-color-on-tertiary: #000000; /* Preto (Texto no Dourado) */
+    --md-sys-color-tertiary-container: #5a4b1a; /* Dourado Escuro */
+    --md-sys-color-on-tertiary-container: #ffdead; /* Dourado Claro (Navajo White) */
+
+    /* Cores de Feedback (Vibrantes para contraste com monocromático) */
+    --md-sys-color-success: #66bb6a; /* Verde Sucesso */
+    --md-sys-color-on-success: #000000;
+    --md-sys-color-error: #ef5350; /* Vermelho Erro */
+    --md-sys-color-on-error: #000000;
+    --md-sys-color-warning: #ffa726; /* Laranja Aviso */
+    --md-sys-color-on-warning: #000000;
+    --md-sys-color-error-container: #b71c1c;
+    --md-sys-color-on-error-container: #ffffff;
+
+    /* Cores Transparentes para fundos sutis */
+    --md-sys-color-error-transparent: rgba(239, 83, 80, 0.15);
+    --md-sys-color-success-transparent: rgba(102, 187, 106, 0.15);
+    --md-sys-color-warning-transparent: rgba(255, 167, 38, 0.15);
+
+    /* --- SOMBRAS (Elevation) --- */
+    --md-sys-color-shadow: #000000;
+    --md-sys-elevation-0: none;
+    --md-sys-elevation-1:
+        0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-2:
+        0px 2px 4px rgba(0, 0, 0, 0.3), 0px 4px 8px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-3:
+        0px 4px 8px rgba(0, 0, 0, 0.3), 0px 6px 12px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-4:
+        0px 6px 12px rgba(0, 0, 0, 0.3), 0px 8px 16px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-5:
+        0px 8px 16px rgba(0, 0, 0, 0.3), 0px 10px 20px rgba(0, 0, 0, 0.15);
+
+    /* --- TIPOGRAFIA --- */
+    --font-family-primary: 'Manrope', sans-serif;
+
+    /* Escala de Tamanhos de Fonte */
+    --font-size-xs: 0.66rem;
+    --font-size-sm: 0.77rem;
+    --font-size-md: 0.88rem;
+    --font-size-lg: 0.98rem;
+    --font-size-xl: 1.09rem;
+    --font-size-2xl: 1.31rem;
+    --font-size-3xl: 1.64rem;
+    --font-size-4xl: 1.97rem;
+
+    /* Pesos de Fonte */
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* Alturas de Linha */
+    --line-height-tight: 1;
+    --line-height-normal: 1.15;
+    --line-height-loose: 1.35;
+
+    /* --- ESPAÇAMENTO --- */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+
+    /* --- BORDAS --- */
+    --border-width-sm: 1px;
+    --border-width-md: 2px;
+    --border-width-lg: 4px;
+    --border-radius-smaller: 4px;
+    --border-radius-small: 16px;
+    --border-radius-medium: 20px;
+    --border-radius-large: 24px;
+    --border-radius-larger: 32px;
+    --border-radius-full: 999px;
+    --border-default: var(--border-width-sm) solid
+        var(--md-sys-color-outline-variant);
+
+    /* --- LAYOUT --- */
+    --container-max-width: 700px;
+    --navbar-bottom-height: 72px;
+
+    /* --- COMPONENTES --- */
+    /* Padding de Botões */
+    --button-padding-sm: var(--space-sm) var(--space-md);
+    --button-padding-md: var(--space-md) var(--space-xl);
+    --button-padding-lg: var(--space-lg) var(--space-2xl);
+
+    /* Tamanhos de Ícones */
+    --icon-size-sm: 1.25rem;
+    --icon-size-md: 1.5rem;
+    --icon-size-lg: 1.75rem;
+    --icon-size-xl: 3rem;
+    --icon-size-2xl: 4rem;
+    --icon-size-3xl: 6rem;
+
+    /* --- ANIMAÇÕES --- */
+    --md-sys-motion-duration: 1s;
+    --md-sys-motion-easing: cubic-bezier(0.8, 0, 0.2, 1);
+    --transition-default: all var(--md-sys-motion-duration)
+        var(--md-sys-motion-easing);
+
+    /* --- CAMADAS (Z-Index) --- */
+    --z-index-base: 1;
+    --z-index-sticky: 990;
+    --z-index-navbar: 1000;
+    --z-index-sheet: 1100;
+    --z-index-popup: 1200;
+    --z-index-loader: 9999;
+}

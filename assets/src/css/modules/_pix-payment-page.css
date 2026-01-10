@@ -1,0 +1,96 @@
+/* assets/css/modules/_pix-payment-page.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+
+.nativa-pix-payment-wrapper {
+    max-width: var(--container-max-width);
+    margin: var(--space-xl) auto;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-xl);
+}
+
+.nativa-pix-header-icon {
+    font-size: 64px;
+    color: var(--md-sys-color-primary);
+}
+
+.nativa-pix-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+}
+
+.nativa-pix-instructions {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: var(--line-height-normal);
+    max-width: 500px;
+}
+
+.nativa-pix-qr-code-container {
+    padding: var(--space-lg);
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: var(--border-radius-larger);
+    margin-top: var(--space-lg);
+}
+
+#nativa-pix-qr-code-img {
+    display: block;
+    width: 256px;
+    height: 256px;
+    border-radius: var(--border-radius-medium);
+    background-color: white;
+}
+
+.nativa-pix-copy-paste-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.nativa-pix-key-wrapper {
+    width: 100%;
+    padding: var(--space-lg);
+    background-color: var(--md-sys-color-surface-container);
+    border: var(--border-width-sm) solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface);
+    word-wrap: break-word;
+}
+
+#nativa-copy-pix-key-btn {
+    width: 100%;
+    max-width: 400px;
+}
+
+.nativa-pix-status-container {
+    margin-top: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.nativa-pix-spinner .nativa-spinner {
+    font-size: 2rem;
+    color: var(--md-sys-color-primary);
+}
+
+#nativa-pix-payment-status-message {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+#nativa-pix-payment-status-message.is-paid {
+    color: var(--md-sys-color-success);
+}

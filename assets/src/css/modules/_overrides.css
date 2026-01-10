@@ -1,0 +1,89 @@
+/* assets/css/modules/_overrides.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+
+/* --- Overrides para o plugin Nextend Social Login --- */
+
+/* Esconde o título padrão "Login social" */
+.nsl-container-block h2 {
+    display: none !important;
+}
+
+/* Container principal dos botões */
+.nsl-container-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilização base para todos os botões do plugin */
+div.nsl-container .nsl-button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: 14px !important;
+    border-radius: var(--border-radius-full) !important;
+    font-family: var(--font-family-primary) !important;
+    font-weight: var(--font-weight-bold) !important;
+    font-size: var(--font-size-lg) !important;
+    text-transform: none !important;
+    box-shadow: none !important;
+    transition: var(--transition-default) !important;
+    width: 100% !important;
+}
+
+div.nsl-container .nsl-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    filter: brightness(1.1);
+}
+
+/* Ícone dentro do botão */
+div.nsl-container .nsl-button-svg-container {
+    margin: 0 !important;
+}
+
+div.nsl-container .nsl-button-svg-container svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Texto dentro do botão */
+div.nsl-container .nsl-button .nsl-button-label {
+    padding: 0 !important;
+    font-size: 1em !important;
+    line-height: var(--line-height-tight) !important;
+}
+
+/* Botão do Google */
+div.nsl-container .nsl-button-google[data-skin='light'] {
+    background: var(--md-sys-color-surface-container-highest) !important;
+    color: var(--md-sys-color-on-surface) !important;
+    border: var(--border-width-sm) solid #ffffff !important;
+}
+
+/* Botão do Facebook */
+div.nsl-container .nsl-button-facebook[data-skin='light'] {
+    background-color: #1877f2 !important; /* Cor oficial do Facebook */
+    color: #ffffff !important;
+    border: var(--border-width-sm) solid #1877f2 !important;
+}
+
+/* GERAIS */
+.entry-content,
+.wp-block-post-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+}
+
+:root :where(.is-layout-constrained) > * {
+    margin-block-start: unset;
+    margin-block-end: unset;
+}
+
+:where(.wp-site-blocks *:focus) {
+    outline-width: 0px !important;
+}

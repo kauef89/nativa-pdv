@@ -1,0 +1,494 @@
+/* assets/css/modules/_my-account-profile.css */
+/* Estilos para os componentes de perfil, dados e endereÃ§os da pÃ¡gina "Minha Conta". */
+
+/* Card de Perfil (topo) */
+.nativa-profile-card {
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--border-radius-larger) var(--border-radius-larger)
+        var(--border-radius-smaller) var(--border-radius-smaller);
+    padding: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: nowrap;
+    box-shadow: var(--shadow-sm);
+    flex-direction: row;
+}
+
+.profile-avatar #my-account-avatar-placeholder {
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-surface-container);
+    overflow: hidden;
+}
+
+.profile-avatar #my-account-avatar-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.profile-greeting {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.profile-points {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--md-sys-color-on-tertiary-container);
+    padding: 4px 9px;
+    border-radius: 8px;
+    width: fit-content;
+    background: var(--md-sys-color-tertiary-container);
+}
+
+.profile-points .material-symbols-rounded {
+    font-size: var(--font-size-sm);
+}
+.profile-points .points-amount {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+.profile-points .points-label {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+}
+.profile-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: var(--space-sm);
+    flex-direction: row;
+    width: 100% !important;
+    justify-content: flex-start;
+}
+
+/* Estilos para SeÃ§Ãµes de Dados (usado em perfil e endereÃ§os) */
+.data-section {
+    background: var(--md-sys-color-surface-container-lowest);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-large);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.data-section h4 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0 0 var(--space-lg) 0;
+    text-align: center;
+}
+
+.data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: var(--font-size-md);
+    flex-direction: column;
+    border-radius: var(--border-radius-medium);
+}
+.data-item:last-child {
+    border-bottom: none;
+}
+
+.data-label {
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-tertiary);
+    font-size: var(--font-size-lg);
+}
+
+.data-value {
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+}
+
+.nativa-edit-link-btn {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-primary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-family: inherit;
+}
+
+/* Card de EndereÃ§o Individual */
+.address-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    background: var(--md-sys-color-surface-container-lowest);
+    border-radius: var(--border-radius-medium);
+    margin-bottom: var(--space-md);
+    box-shadow: var(--shadow-sm);
+    width: 100;
+}
+.address-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: solid var(--border-width-md)
+        var(--md-sys-color-outline-variant);
+    padding-bottom: 6px;
+}
+.address-card-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+.address-card-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-direction: row;
+    align-items: center;
+}
+.address-card-actions .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+.address-card-actions .action-btn .material-symbols-rounded {
+    font-size: var(--icon-size-sm);
+}
+.address-card-actions .edit-btn {
+    color: var(--md-sys-color-on-surface-variant);
+}
+.address-card-actions .delete-btn {
+    color: var(--md-sys-color-error);
+}
+.address-card-actions .edit-btn:hover {
+    background-color: var(--md-sys-color-secondary-container);
+}
+.address-card-actions .delete-btn:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-error) 20%,
+        transparent
+    );
+}
+
+.address-card-info {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+    flex-direction: column;
+}
+
+.address-card-complement {
+    display: block;
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-xs);
+    opacity: 0.8;
+}
+
+button#add-new-address-btn {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+/* Outros estilos do Card de Gerenciamento */
+#management-card .card-footer {
+    padding: var(--space-xl) 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+#management-card .action-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+}
+#management-card .nativa-delete-account-link {
+    padding: 6px;
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: underline;
+    background: transparent;
+    border: 0;
+    color: var(--md-sys-color-error);
+}
+#management-card .nativa-delete-account-link:hover {
+    color: var(--md-sys-color-error);
+}
+
+button#my-account-view-rules-btn {
+    font-size: var(--font-size-sm);
+    padding: var(--button-padding-sm);
+    line-height: 1;
+}
+
+button#my-account-view-rewards-btn {
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1;
+}
+
+section#my-account-section {
+    padding: var(--space-md);
+}
+
+.nativa-account-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h3.card-title {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.nativa-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    background: var(--md-sys-color-surface);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-larger);
+}
+
+span.address-card-primary-tag {
+    background: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    padding: var(--space-sm);
+    border-radius: var(--border-radius-smaller);
+    line-height: 1;
+    letter-spacing: normal;
+    font-weight: var(--font-weight-semibold);
+}
+
+#nativa-loyalty-rules-sheet .nativa-bottom-sheet-body {
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+#nativa-loyalty-rules-sheet .nativa-bottom-sheet-body p {
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-xl);
+}
+
+#nativa-loyalty-rules-sheet .nativa-bottom-sheet-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+span.material-symbols-rounded.login-prompt-icon {
+    font-size: var(--icon-size-2xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-lg);
+    color: var(--md-sys-color-outline-variant);
+}
+
+.nativa-login-prompt-header p {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    margin-top: calc(-1 * var(--space-md));
+}
+
+.nativa-benefit-card {
+    background: var(--md-sys-color-surface-container-lowest);
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: var(--border-radius-large);
+}
+
+.nativa-login-benefits-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.benefit-card-icon > span {
+    color: var(--md-sys-color-outline);
+    font-size: var(--icon-size-2xl);
+    text-align: left;
+    margin-right: var(--space-sm);
+}
+
+.nativa-login-prompt-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-lg);
+}
+
+/* --- INÃCIO DA MODIFICAÃ‡ÃƒO: Estilos para Abas --- */
+.nativa-tabs-nav {
+    display: flex;
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--border-radius-smaller) var(--border-radius-smaller) 0 0;
+    overflow: hidden;
+    padding: var(--space-md);
+    gap: var(--space-sm);
+}
+
+.nativa-tab-item {
+    flex: 1;
+    padding: var(--space-md) var(--space-sm);
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border: none;
+    border-bottom: 2px solid var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    transition: all 0.2s ease-in-out;
+    padding: var(--button-padding-sm);
+    border-radius: var(--border-radius-full);
+}
+
+.nativa-tab-item.is-active {
+    color: var(--md-sys-color-surface-container-lowest);
+    background: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-tabs-content {
+    background-color: var(--md-sys-color-surface);
+    border-radius: 0 0 var(--border-radius-larger) var(--border-radius-larger);
+    padding: var(--space-md);
+    margin-top: -12px;
+}
+
+.nativa-tab-panel {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.nativa-tab-panel.is-active {
+    display: flex;
+}
+
+.is-actions-card {
+    background-color: transparent;
+    box-shadow: none;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding-top: var(--space-lg);
+}
+/* --- FIM DA MODIFICAÃ‡ÃƒO: Estilos para Abas --- */
+
+div#my-account-logged-in-view {
+    display: flex !important
+;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+a.nativa-delete-account-link {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-error);
+}
+
+div#address-list-container {
+    width: 100%;
+}
+
+img.avatar.avatar-80.photo {
+    border-radius: var(--border-radius-full);
+    height: 50px;
+    width: 50px;
+}
+
+.change-whatsapp {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+button#edit-phone-btn {
+    background: transparent;
+    border: 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-profile-header {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.nativa-profile-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+}
+
+.nativa-loyalty-summary {
+    background-color: var(--md-sys-color-surface-container-lowest);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: var(--font-size-sm);
+    padding: var(--space-xs);
+    border-radius: var(--border-radius-smaller);
+    gap: var(--space-xs);
+}
+
+.nativa-loyalty-summary .material-symbols-rounded {
+    font-size: var(--icon-size-sm);
+    color: var(--md-sys-color-outline);
+}
+
+.nativa-profile-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+button#enable-push-notifications {
+    color: var(--md-sys-color-warning);
+    display: flex;
+    gap: 12px;
+    background: var(--md-sys-color-warning-transparent);
+    width: 100%;
+}

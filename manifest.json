@@ -1,0 +1,29 @@
+{
+    "name": "Nativa Delivery",
+    "short_name": "Nativa",
+    "description": "Peça seus pasteis e combos favoritos da Pastelaria Nativa!",
+    "id": "/?app=delivery",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#312F2D",
+    "theme_color": "#312F2D",
+    "icons": [
+        {
+            "src": "/wp-content/plugins/nativa-delivery/assets/icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/wp-content/plugins/nativa-delivery/assets/icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/wp-content/plugins/nativa-delivery/assets/icons/maskable_icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

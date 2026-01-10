@@ -1,0 +1,71 @@
+/* assets/css/modules/_cart-reward-banner.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+/* ATUALIZADO (ATUAL 2): Aplica a nova paleta de cores e os tokens de padding e fonte. */
+
+/* Estilos para a caixa do banner de recompensa */
+.nativa-reward-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--border-radius-medium);
+    margin: var(--space-lg) 0;
+    border: var(--border-width-sm) solid var(--md-sys-color-tertiary);
+}
+
+.nativa-reward-icon {
+    flex-shrink: 0;
+}
+
+.nativa-reward-icon .material-symbols-rounded {
+    font-size: var(--icon-size-xl);
+    font-variation-settings: 'FILL' 1;
+}
+
+.nativa-reward-text {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.nativa-reward-title {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+}
+
+.nativa-reward-title strong {
+    font-weight: var(--font-weight-bold);
+}
+
+.nativa-reward-cost {
+    font-size: var(--font-size-xs);
+    opacity: 0.8;
+}
+
+.nativa-reward-redeem-btn {
+    flex-shrink: 0;
+    background-color: var(--md-sys-color-primary) !important;
+    color: var(--md-sys-color-on-primary) !important;
+    padding: var(--button-padding-sm) !important;
+    font-size: var(--font-size-sm) !important;
+}
+
+/* Estilo para item já resgatado no carrinho */
+.nativa-cart-item.is-reward-item {
+    margin: var(--space-xs) 0;
+}
+
+.nativa-reward-item-tag,
+.nativa-offer-item-tag {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    padding: 2px var(--space-sm);
+    border-radius: var(--border-radius-smaller);
+    font-size: 0.7em; /* Mantido por ser muito específico */
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    margin-left: var(--space-sm);
+}

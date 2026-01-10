@@ -1,0 +1,46 @@
+/* assets/css/modules/_pix-banner.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+
+.nativa-pix-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    background-color: var(--md-sys-color-tertiary-container);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-large);
+    margin: var(--space-lg) 0;
+}
+
+.nativa-pix-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border-radius: 50%;
+}
+
+.nativa-pix-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.nativa-pix-text-content {
+    flex-grow: 1;
+}
+
+.nativa-pix-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+}
+
+.nativa-pix-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-tertiary-container);
+    opacity: 0.9;
+    margin: var(--space-xs) 0 0 0;
+}

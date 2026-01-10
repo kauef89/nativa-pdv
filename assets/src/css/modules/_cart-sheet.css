@@ -1,0 +1,768 @@
+/* assets/css/modules/_cart-sheet.css */
+/**
+ * ... (histÃ³rico de versÃµes anterior) ...
+ * VERSÃƒO CORRIGIDA: Restaura a animaÃ§Ã£o de slide-in/slide-out usando @keyframes,
+ * garantindo que funcione corretamente com a largura de 90% da sheet, sem "saltos"
+ * ou conflitos de CSS que a deixavam invisÃ­vel.
+ */
+
+/* --- INÃ CIO DA MODIFICAÃ‡ÃƒO (ANIMAÃ‡ÃƒO CORRIGIDA) --- */
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutToRight {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
+}
+
+#nativa-cart-side-sheet.is-visible .nativa-side-sheet-content {
+    /* Aplica a animaÃ§Ã£o de entrada quando a sheet se torna visÃ­vel */
+    animation: slideInFromRight 0.6s var(--md-sys-motion-easing-emphasized)
+        forwards;
+}
+
+#nativa-cart-side-sheet:not(.is-visible) .nativa-side-sheet-content {
+    /* Aplica a animaÃ§Ã£o de saÃ­da quando a sheet Ã© fechada */
+    animation: slideOutToRight 0.4s var(--md-sys-motion-easing-accelerate)
+        forwards;
+}
+
+/* --- FIM DA MODIFICAÃ‡ÃƒO (ANIMAÃ‡ÃƒO CORRIGIDA) --- */
+
+/* --- INÃ CIO DO REFINAMENTO DE DESIGN --- */
+#nativa-cart-side-sheet .nativa-side-sheet-content {
+    background-color: var(--md-sys-color-surface);
+    border-left: none;
+    box-shadow: none;
+    max-width: none;
+    width: 90vw;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    height: 95vh;
+    border-radius: 48px 0 0 48px;
+    /* CORREÃ‡ÃƒO: A propriedade 'transform' foi removida daqui para nÃ£o conflitar com a animaÃ§Ã£o. */
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    border-radius: var(--border-radius-larger) var(--border-radius-larger) 0
+        var(--border-radius-larger);
+    top: 5%;
+}
+
+.nativa-side-sheet-back-button {
+    position: absolute;
+    top: var(--space-lg);
+    left: var(--space-lg);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    transition: background-color var(--transition-default);
+    z-index: 10;
+}
+
+.nativa-side-sheet-back-button:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.nativa-cart-title {
+    text-align: center;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    padding: 0 50px;
+    margin: var(--space-sm) 0;
+}
+
+.nativa-cart-modality-display {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--md-sys-color-surface-container-lowest);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-larger) var(--border-radius-larger)
+        var(--border-radius-smaller) var(--border-radius-smaller);
+    gap: var(--space-sm);
+}
+
+.nativa-cart-modality-selection.is-error-highlight {
+    border: var(--border-width-md) solid var(--md-sys-color-error);
+    box-shadow: 0 0 0 4px var(--md-sys-color-error-transparent);
+    transition: all 0.3s ease-in-out;
+}
+
+.nativa-cart-section-title {
+    text-align: left;
+    font-size: var(--font-size-md);
+    margin: 0;
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-modality-options-cart {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: var(--space-sm);
+}
+
+.nativa-modality-options-cart .nativa-order-button {
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    height: auto;
+    line-height: var(--line-height-tight);
+    border-radius: var(--border-radius-large);
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    justify-content: flex-start;
+}
+
+.nativa-modality-options-cart .nativa-order-button.active {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO --- */
+#nativa-cart-guest-bairro-container {
+    overflow-x: auto;
+    /* Oculta a barra de rolagem visualmente */
+    scrollbar-width: none; /* Para Firefox */
+}
+
+#nativa-cart-guest-bairro-container::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari, e Opera */
+}
+/* --- FIM DA MODIFICAÇÃO --- */
+
+#nativa-bairro-select {
+    width: 100%;
+    padding: 14px var(--space-lg);
+    border-radius: 0 var(--border-radius-large) var(--border-radius-large)
+        var(--border-radius-large);
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    border: 0;
+}
+
+#nativa-bairro-select.error {
+    box-shadow: 0 0 0 2px var(--md-sys-color-error-transparent);
+    border: var(--border-width-md) solid var(--md-sys-color-error);
+}
+
+#nativa-cart-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 150px;
+    background: var(--md-sys-color-surface-container-lowest);
+    border-radius: var(--border-radius-smaller);
+}
+
+.cart-loader-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cart-loader-spinner .nativa-spinner {
+    color: var(--md-sys-color-primary);
+    transform: scale(1.5);
+}
+
+/* --- INÃ CIO DA MODIFICAÃ‡ÃƒO DE DESIGN FINAL --- */
+.nativa-cart-item {
+    display: flex; /* Cria o layout de 2 colunas: [texto] | [aÃ§Ãµes] */
+    align-items: flex-start; /* Alinha verticalmente */
+    gap: var(--space-sm);
+    padding: var(--space-md) 0;
+    border-bottom: var(--border-width-md) dashed
+        var(--md-sys-color-outline-variant);
+}
+
+.nativa-cart-item-text {
+    flex-grow: 1; /* Faz a coluna de texto ocupar o espaÃ§o mÃ¡ximo */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.nativa-cart-item-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-md);
+    width: 100%;
+}
+
+.nativa-cart-item-name {
+    flex-grow: 1;
+}
+
+.nativa-cart-item-price {
+    flex-shrink: 0;
+}
+
+.nativa-cart-item-actions {
+    flex-shrink: 0; /* Impede que a coluna de aÃ§Ãµes seja espremida */
+}
+/* --- FIM DA MODIFICAÃ‡ÃƒO DE DESIGN FINAL --- */
+
+.nativa-cart-item:last-child {
+    border-bottom: none;
+}
+
+/* --- NOVA CLASSE PARA O ESTADO FINAL DA TRANSIÃ‡ÃƒO --- */
+.nativa-cart-item.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.nativa-cart-item-main {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.nativa-cart-item-info {
+    flex-grow: 1;
+}
+
+.nativa-cart-item-name {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--md-sys-color-on-surface);
+
+    /* MODIFICAÃ‡ÃƒO: Alinha o nome e a tag */
+    display: flex;
+    gap: var(--space-sm);
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.nativa-cart-item-details {
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-cart-item-price {
+    font-weight: var(--font-weight-bold);
+    text-align: right;
+    flex-shrink: 0;
+    font-size: var(--font-size-lg);
+    color: var(--md-sys-color-tertiary);
+    margin: 0 var(--space-sm);
+}
+
+.nativa-cart-item-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: var(--border-radius-full);
+}
+
+.nativa-cart-item-edit-button,
+.nativa-cart-item-remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.nativa-cart-item-actions .material-symbols-rounded {
+    font-size: var(--icon-size-sm);
+}
+
+.nativa-cart-item-edit-button {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-cart-item-edit-button:hover {
+    background-color: var(--md-sys-color-primary-container);
+}
+
+.nativa-cart-item-remove-button {
+    color: var(--md-sys-color-error);
+}
+
+.nativa-cart-item-remove-button:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-error) 20%,
+        transparent
+    );
+}
+
+/* --- INÃ CIO DA MODIFICAÃ‡ÃƒO: Estilos para as novas tags de Ã­cone --- */
+.nativa-reward-item-tag,
+.nativa-offer-item-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--border-radius-full);
+    flex-shrink: 0;
+}
+
+.nativa-reward-item-tag .material-symbols-rounded,
+.nativa-offer-item-tag .material-symbols-rounded {
+    font-size: 16px;
+    font-variation-settings: 'FILL' 1;
+}
+
+.nativa-reward-item-tag {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+
+.nativa-offer-item-tag {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+
+/* --- FIM DA MODIFICAÃ‡ÃƒO --- */
+
+.nativa-cart-details-list,
+.nativa-cart-combo-selections,
+.nativa-cart-combo-selection-addons {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.nativa-cart-details-list {
+    margin-top: var(--space-sm);
+    padding-left: var(--space-lg);
+    border-left: var(--border-width-md) solid
+        var(--md-sys-color-outline-variant);
+}
+
+.nativa-cart-combo-selections {
+    margin-top: var(--space-sm);
+}
+
+.combo-selection-item {
+    padding-left: var(--space-md);
+    /* margin-top: 6px; */
+    border-left: var(--border-width-md) solid
+        var(--md-sys-color-outline-variant);
+}
+
+.combo-selection-item strong {
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+}
+
+.nativa-cart-combo-selection-addons {
+    padding-left: var(--space-lg);
+    margin-top: var(--space-xs);
+    border-left: solid var(--border-width-md)
+        var(--md-sys-color-outline-variant);
+}
+
+.nativa-cart-combo-selection-addons li,
+.nativa-cart-details-list li {
+    padding: 2px 0;
+    font-size: var(--font-size-sm);
+}
+
+.addon-price-in-cart {
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-tertiary);
+    margin-left: var(--space-xs);
+}
+
+.nativa-cart-summary {
+    background-color: var(--md-sys-color-surface-container-lowest);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-smaller) var(--border-radius-smaller)
+        var(--border-radius-larger) var(--border-radius-larger);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.nativa-cart-summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-lg);
+}
+
+.nativa-cart-summary-line.is-total {
+    font-size: var(--font-size-xl);
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+}
+
+.nativa-cart-total-value {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+}
+
+.nativa-cart-summary .nativa-separator {
+    margin: var(--space-sm) 0;
+}
+
+.nativa-cart-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: stretch;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+#nativa-clear-cart-button {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-md);
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    border-radius: var(--border-radius-full);
+    text-decoration: underline;
+    box-shadow: none;
+}
+
+#nativa-clear-cart-button:hover {
+    color: var(--md-sys-color-primary);
+}
+
+#nativa-checkout-button {
+    width: 100%;
+    padding: var(--button-padding-lg);
+    font-size: var(--font-size-xl);
+    margin-top: var(--space-lg);
+}
+
+.nativa-empty-cart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px 20px;
+    margin: auto 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-empty-cart-container .material-symbols-rounded {
+    font-size: var(--icon-size-2xl);
+    margin-bottom: 20px;
+    color: var(--md-sys-color-outline-variant);
+}
+
+.nativa-empty-cart-container h3 {
+    margin-bottom: var(--space-md);
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-empty-cart-container p {
+    max-width: 280px;
+    margin: 0 auto 24px;
+}
+
+#go-to-menu-from-cart {
+    padding: var(--button-padding-md);
+    font-size: var(--font-size-lg);
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+#nativa-frete-gratis-message {
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: var(--space-lg);
+    border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
+    margin-top: calc(-1 * var(--space-xl));
+    overflow: hidden;
+}
+
+.nativa-frete-gratis-container {
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.frete-gratis-progress-bar {
+    width: 100%;
+    height: var(--space-sm);
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+    margin: var(--space-md) 0;
+}
+
+.frete-gratis-progress-bar .progress {
+    height: 100%;
+    width: 0%;
+    background-color: var(--md-sys-color-tertiary);
+    border-radius: var(--border-radius-full);
+    transition:
+        width 0.5s ease,
+        background-color 0.3s ease;
+}
+
+.frete-gratis-content {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.frete-gratis-content .frete-icon {
+    font-size: var(--icon-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.frete-gratis-text {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.frete-gratis-text strong {
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+}
+
+.nativa-frete-gratis-container.is-achieved {
+    background-color: transparent;
+}
+
+.nativa-frete-gratis-container.is-achieved .progress {
+    background-color: var(--md-sys-color-success);
+}
+
+.nativa-frete-gratis-container.is-achieved .frete-icon {
+    color: var(--md-sys-color-success);
+}
+
+.nativa-frete-gratis-container.is-achieved .frete-gratis-text {
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-frete-gratis-container.is-achieved .frete-gratis-text strong {
+    color: var(--md-sys-color-success);
+}
+
+div#nativa-cart-primary-address-card {
+    background: var(--md-sys-color-surface-container-low);
+    padding: var(--space-md);
+    border-radius: 0 var(--border-radius-large) 0 0;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-xs);
+}
+
+.address-card-info strong {
+    font-size: var(--font-size-xs);
+    background: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-surface-container);
+    padding: 1px 5px;
+    border-radius: var(--border-radius-smaller);
+    line-height: 1;
+}
+
+/* Estilos especÃ­ficos para itens de oferta no carrinho */
+.nativa-cart-item-price.is-offer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.nativa-cart-item-price.is-offer .original-price {
+    font-size: 0.8em;
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: line-through;
+    margin-bottom: 2px;
+    opacity: 0.7;
+}
+
+.nativa-cart-item-price.is-offer .promo-price {
+    font-weight: bold;
+    color: var(--md-sys-color-tertiary);
+    font-size: 1em;
+}
+
+button#go-to-menu-from-cart .material-symbols-rounded {
+    font-size: var(--icon-size-lg);
+    color: var(--md-sys-color-on-primary);
+    margin: 0;
+}
+
+.nativa-cart-details-list li {
+    font-size: var(--font-size-sm);
+    padding: 0;
+}
+
+.nativa-cart-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: scroll;
+    background: var(--md-sys-color-surface);
+    border-radius: var(--border-radius-larger) var(--border-radius-larger)
+        var(--border-radius-smaller) var(--border-radius-smaller);
+}
+
+div#nativa-cart-modality-selection {
+    border-radius: var(--border-radius-larger);
+}
+
+#nativa-cart-side-sheet .nativa-order-button.active[data-modality='delivery'] {
+    /* Suas regras de CSS aqui */
+    background-color: var(
+        --md-sys-color-surface-container-low
+    ); /* Exemplo: um azul diferente para a entrega ativa */
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+    margin-bottom: calc(-1 * var(--space-lg));
+}
+
+button#nativa-cart-change-address-btn {
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+}
+
+#nativa-cart-side-sheet
+    button.active[data-modality='delivery']
+    + button[data-modality='pickup']::before {
+    content: '';
+    position: absolute;
+    bottom: -9px;
+    left: -9px;
+    width: 36px;
+    height: 36px;
+    background-image: url("data:image/svg+xml,%3csvg width='36' height='36' viewBox='0 0 36 36' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M0 0C0 19.8822 16.1178 36 36 36H0V0Z' fill='%232a2f32'/%3e%3c/svg%3e");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+span.modality-wait-time {
+    font-weight: 500;
+    color: var(--md-sys-color-tertiary);
+}
+
+.nativa-side-sheet-header {
+    display: none;
+}
+
+.address-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--md-sys-color-surface-container-low);
+    border-radius: 0 var(--border-radius-large) 0 0;
+}
+
+.address-pill {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: var(--border-radius-full);
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    border: 0;
+    transition: all 0.2s ease-in-out;
+}
+
+.address-pill.is-active {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    border-color: var(--md-sys-color-primary);
+}
+
+.address-pill.add-new {
+    padding: var(--space-sm);
+    width: 36px;
+    height: 36px;
+}
+.address-pill.add-new .material-symbols-rounded {
+    font-size: var(--icon-size-sm);
+}
+
+.cart-address-full-string {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-xs);
+    display: block;
+}
+
+.bairro-pills-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    overflow: auto;
+    scrollbar-width: none;
+    background: var(--md-sys-color-surface-container-low);
+    border-radius: 0 var(--border-radius-large) 0 0;
+}
+
+.bairro-pill {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: var(--border-radius-full);
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    border: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+}
+
+.bairro-pill.is-active {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    display: flex;
+}

@@ -1,0 +1,535 @@
+/* assets/css/modules/_checkout-page.css */
+/* ATUALIZADO: 
+  - Aplicação das novas variáveis de cor e tipografia.
+  - Estilos para o novo dropdown de seleção de modalidade e a mensagem de loja fechada.
+  - Ajustes no resumo financeiro para visibilidade das linhas de frete e desconto.
+  - Adicionadas regras de proporção para campos de formulário (DDD/Telefone, Número/Toggle).
+  - CORRIGIDA regra de "full-width" para o wrapper principal.
+  - ATUALIZADO 2: Adicionados estilos para o novo resumo de pedido hierárquico.
+  - ATUALIZADO 3: Adicionados estilos para o novo controle de troco.
+  - ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css.
+  - ATUALIZADO (ATUAL 2): Aplica a nova paleta de cores hierárquica e os tokens de sombra, padding e ícones.
+*/
+
+/* --- INÍCIO DO REFINAMENTO DE DESIGN --- */
+.nativa-checkout-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: var(--space-md);
+}
+
+#nativa-checkout-main-content {
+    max-width: none;
+    /* margin: var(--space-md); */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    background: var(--md-sys-color-surface);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-larger);
+}
+
+.nativa-checkout-section,
+.nativa-personal-data-section,
+.nativa-coupon-section,
+.nativa-checkout-cart-summary,
+.nativa-payment-method-section,
+div#nativa-checkout-modality-section {
+    background: var(--md-sys-color-surface-container-lowest);
+    padding: var(--space-xl);
+    border-radius: var(--border-radius-larger);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.nativa-customer-details h2,
+.nativa-coupon-section h2,
+.nativa-payment-method-section h2,
+.nativa-checkout-cart-summary h2,
+.nativa-checkout-section h3 {
+    text-align: center;
+    padding-bottom: var(--space-md);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-2xl);
+}
+
+#nativa-delivery-address-block h3 {
+    text-align: center;
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-lg);
+    color: var(--md-sys-color-on-surface-variant);
+}
+/* --- FIM DO REFINAMENTO DE DESIGN --- */
+
+.nativa-order-summary-list .nativa-cart-item {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md) 0;
+    border-bottom: var(--border-width-md) dashed
+        var(--md-sys-color-outline-variant);
+}
+.nativa-order-summary-list .nativa-cart-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.nativa-order-summary-list .nativa-cart-item-main {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    width: 100%;
+}
+.nativa-order-summary-list .nativa-cart-item-info {
+    flex-grow: 1;
+}
+.nativa-order-summary-list .nativa-cart-item-name {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface);
+}
+.nativa-order-summary-list .nativa-cart-item-details {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+}
+.nativa-order-summary-list .nativa-cart-item-price {
+    font-weight: var(--font-weight-bold);
+    text-align: right;
+    flex-shrink: 0;
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-tertiary);
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+}
+.nativa-order-summary-list .nativa-cart-details-list,
+.nativa-order-summary-list .nativa-cart-combo-selections,
+.nativa-order-summary-list .nativa-cart-combo-selection-addons {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+.nativa-order-summary-list .nativa-cart-details-list {
+    padding-left: var(--space-lg);
+    margin-left: 2px;
+}
+.nativa-order-summary-list .nativa-cart-combo-selections {
+    margin-top: var(--space-sm);
+}
+.nativa-order-summary-list .combo-selection-item {
+    padding: 6px 0 6px var(--space-md);
+    margin-top: 6px;
+    border-left: var(--border-width-md) solid
+        var(--md-sys-color-outline-variant);
+}
+.nativa-order-summary-list .combo-selection-item strong {
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-semibold);
+}
+.nativa-order-summary-list .nativa-cart-combo-selection-addons {
+    padding-left: var(--space-lg);
+    margin-top: var(--space-xs);
+}
+.nativa-order-summary-list .nativa-cart-combo-selection-addons li,
+.nativa-order-summary-list .nativa-cart-details-list li {
+    padding: 2px 0;
+}
+.nativa-order-summary-list .addon-price-in-cart {
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-tertiary);
+}
+
+.nativa-checkout-cart-summary {
+    border-radius: var(--border-radius-smaller);
+}
+
+.nativa-checkout-subtotal-summary,
+.nativa-checkout-fee-row,
+.nativa-checkout-discount-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+}
+.frete-gratis-tag {
+    color: var(--md-sys-color-success);
+    font-weight: var(--font-weight-bold);
+}
+.nativa-checkout-total-final {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3em;
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    border-top: var(--border-width-sm) solid var(--md-sys-color-outline-variant);
+    padding-top: var(--space-lg);
+    margin-top: var(--space-sm);
+}
+
+.nativa-form-group-split {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+.nativa-ddd-input {
+    flex: 0 0 25%;
+}
+.nativa-phone-input {
+    flex: 0 0 40%;
+}
+.nativa-street-number-group {
+    flex: 1 1 33%;
+    margin-bottom: 0 !important;
+}
+.nativa-no-number-group {
+    margin-top: 30px;
+}
+
+.nativa-coupon-input-group {
+    display: flex;
+    gap: var(--space-xs);
+    background: transparent;
+    margin: 0;
+}
+.nativa-coupon-input-group input {
+    flex-grow: 1;
+}
+.nativa-apply-coupon-button {
+    flex-shrink: 0;
+    border-radius: var(--border-radius-smaller) var(--border-radius-full)
+        var(--border-radius-full) var(--border-radius-smaller);
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-confirm-order-button {
+    width: 100%;
+    padding: var(--button-padding-lg);
+    font-size: 1.2em;
+}
+
+.nativa-modality-selection-section #nativa-checkout-store-closed-message {
+    margin-top: var(--space-lg);
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-primary);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--border-radius-medium);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+}
+
+.nativa-checkout-review-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+button#nativa-back-to-menu-button,
+button#nativa-edit-order-button {
+    font-size: var(--font-size-md);
+    padding: var(--button-padding-md);
+    flex-grow: 1;
+}
+
+form#nativa-checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.nativa-info-card {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+    padding: var(--space-md);
+    background-color: var(--md-sys-color-warning-transparent);
+    border-radius: var(--border-radius-medium);
+    border: solid var(--border-width-md) var(--md-sys-color-warning);
+    margin-top: var(--space-2xl);
+}
+
+.nativa-info-card .material-symbols-rounded {
+    font-size: var(--icon-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-info-card p {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    margin-bottom: 0;
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-manual-pix-container {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: var(--border-radius-medium);
+    padding: var(--space-lg);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.nativa-pix-key-wrapper {
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-small);
+}
+
+#nativa-manual-pix-key {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: var(--md-sys-color-on-surface);
+    display: block;
+}
+
+#nativa-manual-pix-name {
+    font-size: 0.85em;
+    color: var(--md-sys-color-on-surface-variant);
+    display: block;
+    margin-top: var(--space-xs);
+}
+
+#nativa-checkout-address-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    width: 100%;
+}
+
+.checkout-address-card {
+    padding: var(--space-xl);
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border-radius: var(--border-radius-medium);
+    cursor: pointer;
+    transition: var(--transition-default);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.checkout-address-card:hover {
+    border-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.checkout-address-card.is-selected {
+    outline: solid 2px var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+.checkout-address-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: solid var(--border-width-md)
+        var(--md-sys-color-outline-variant);
+    padding-bottom: var(--space-md);
+    font-size: var(--font-size-lg);
+}
+
+.checkout-address-card-title {
+    font-size: 1.1em;
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.checkout-address-card-primary-tag {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius-smaller);
+    text-transform: uppercase;
+}
+
+.checkout-address-card-info {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0;
+}
+
+.checkout-address-card input[type='radio'] {
+    display: none;
+}
+
+.nativa-info-card .material-symbols-rounded {
+    color: var(--md-sys-color-warning);
+    font-size: var(--icon-size-md);
+}
+
+div#nativa-delivery-address-block {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nativa-troco-control-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    width: 100%;
+    padding: var(--space-md);
+}
+.nativa-troco-control-wrapper .nativa-toggle-switch {
+    flex-shrink: 1;
+}
+.nativa-troco-input-wrapper {
+    flex-grow: 1;
+}
+.nativa-troco-input-wrapper label {
+    font-size: 0.8em;
+    text-align: center;
+    margin-bottom: var(--space-xs);
+}
+.nativa-troco-input-wrapper input {
+    text-align: left;
+}
+
+div#nativa-checkout-modality-section {
+    border-radius: var(--border-radius-larger) var(--border-radius-larger)
+        var(--border-radius-smaller) var(--border-radius-smaller);
+}
+
+div#logo-checkout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: var(--space-3xl);
+}
+
+.nativa-personal-data-section {
+    border-radius: 4px;
+}
+
+.nativa-checkout-section.nativa-fade-in-up {
+    border-radius: 4px;
+}
+
+.nativa-coupon-section {
+    border-radius: var(--border-radius-smaller);
+}
+
+.nativa-payment-method-section {
+    border-radius: var(--border-radius-smaller) var(--border-radius-smaller)
+        var(--border-radius-larger) var(--border-radius-larger);
+}
+
+button#nativa-confirm-order-button {
+    margin-top: var(--space-xl);
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-size: var(--font-size-xl);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-lg);
+}
+
+div#nativa-coupon-message.is-error {
+    background: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+}
+
+div#nativa-coupon-message.is-success {
+    background: var(--md-sys-color-success);
+    color: var(--md-sys-color-on-success);
+}
+
+div#nativa-coupon-message {
+    text-align: center;
+    padding: var(--button-padding-sm);
+    border-radius: var(--border-radius-smaller);
+    width: fit-content;
+    align-self: center;
+    font-size: var(--font-size-md);
+}
+
+h1.wp-block-post-title {
+    display: none;
+}
+
+input#nativa-coupon-code {
+    border-radius: var(--border-radius-full) var(--border-radius-smaller)
+        var(--border-radius-smaller) var(--border-radius-full);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg);
+}
+
+input#nativa-coupon-code::placeholder {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+button#nativa-add-offer-btn {
+    padding: var(--button-padding-lg);
+}
+
+div#nativa-payment-method-options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+button.nativa-payment-button {
+    padding: var(--button-padding-md);
+    border-radius: var(--border-radius-full);
+    background: var(--md-sys-color-surface-container-highest);
+    border: 0;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+}
+
+.nativa-payment-method-section .nativa-form-group {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+button.nativa-payment-button.is-active {
+    background: var(--md-sys-color-on-surface);
+    color: var(--md-sys-color-surface);
+}
+
+div#nativa-address-selection-list {
+    padding: var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+main#wp--skip-link--target {
+    margin-top: 0 !important;
+}
+
+div#nativa-checkout-page {
+    margin: 0;
+    padding: 0;
+}
+div#nativa-payment-method-options.is-error {
+    outline: var(--border-width-lg) solid var(--md-sys-color-error);
+    outline-offset: 2px;
+    border-radius: var(--border-radius-larger);
+    border-color: transparent;
+    background-color: var(--md-sys-color-error-transparent);
+    margin: var(--space-md);
+    padding: var(--space-sm);
+}
+
+.nativa-form-group.ddd-group {
+    width: 35%;
+}

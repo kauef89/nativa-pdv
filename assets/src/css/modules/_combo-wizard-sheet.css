@@ -1,0 +1,178 @@
+/* assets/css/modules/_combo-wizard-sheet.css */
+/* ATUALIZADO (ATUAL): Aplica a nova paleta de cores e os tokens de sombra, padding e fontes. */
+
+/* Estilos para o conteúdo da bottom sheet do wizard de combo */
+#nativa-combo-wizard-sheet .nativa-bottom-sheet-content {
+    max-height: 90vh; /* Permite mais altura para o wizard */
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Garante que o conteúdo ocupe a altura total da sheet */
+}
+
+/* Cabeçalho do wizard */
+.nativa-combo-wizard-header {
+    text-align: center;
+    flex-shrink: 0; /* Impede que o cabeçalho encolha */
+}
+
+/* Título do combo no wizard */
+#nativa-combo-wizard-title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-sm);
+    color: var(--md-sys-color-tertiary);
+}
+
+/* Container da barra de progresso */
+.nativa-combo-progress-container {
+    margin-top: var(--space-lg);
+}
+
+/* Texto do passo atual (ex: "Passo 1 de 3") */
+#nativa-combo-wizard-step-text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-xs);
+    display: block; /* Garante que o texto ocupe sua própria linha */
+}
+
+/* Barra de progresso do wizard */
+#nativa-combo-wizard-progress {
+    width: 70%;
+    height: 10px;
+    -webkit-appearance: none; /* Remove estilos padrão do navegador */
+    appearance: none;
+    border: none;
+    border-radius: var(--border-radius-full);
+    overflow: hidden; /* Garante que o preenchimento fique dentro da borda arredondada */
+    margin-top: var(--space-xs);
+    background-color: var(
+        --md-sys-color-surface-container-low
+    ); /* Cor de fundo da barra */
+}
+
+/* Preenchimento da barra de progresso (compatibilidade Webkit) */
+#nativa-combo-wizard-progress::-webkit-progress-bar {
+    background-color: var(--md-sys-color-outline-variant);
+}
+
+/* Valor da barra de progresso (compatibilidade Webkit) */
+#nativa-combo-wizard-progress::-webkit-progress-value {
+    background-color: var(--md-sys-color-primary);
+    border-radius: var(--border-radius-full);
+    transition: width 0.3s ease; /* Adiciona transição suave ao preenchimento */
+}
+
+/* Título do passo individual dentro do conteúdo do wizard */
+.nativa-combo-step-title {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    color: var(--md-sys-color-on-surface);
+}
+
+/* Conteúdo principal do passo do wizard (com rolagem) */
+#nativa-combo-wizard-step-content {
+    flex-grow: 1; /* Permite que o conteúdo ocupe o espaço restante e role */
+    overflow-y: auto; /* Adiciona rolagem vertical se o conteúdo exceder */
+}
+
+/* Opção de produto dentro do passo do combo */
+.nativa-combo-product-option {
+    margin-bottom: var(--space-md);
+}
+
+.nativa-combo-product-option input[type='radio'] {
+    display: none; /* Esconde o rádio button nativo */
+}
+
+.nativa-combo-product-option > label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centraliza itens verticalmente */
+    padding: 18px; /* Mais padding para opções de combo */
+    border-radius: var(--border-radius-large); /* Mais arredondado */
+    cursor: pointer;
+    transition: var(--transition-default);
+    background-color: var(
+        --md-sys-color-surface-container-low
+    ); /* Cor de fundo padrão da opção */
+    color: var(--md-sys-color-on-surface);
+    flex-direction: column;
+}
+
+.nativa-combo-product-option > label:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.nativa-combo-product-option input[type='radio']:checked + label {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-weight: var(--font-weight-bold);
+    border-bottom-left-radius: var(--border-radius-smaller);
+    border-bottom-right-radius: var(--border-radius-smaller);
+}
+
+.nativa-combo-product-option .product-name {
+    font-weight: var(
+        --font-weight-semibold
+    ); /* Nome do produto herda o negrito quando selecionado */
+    font-size: var(--font-size-lg);
+}
+
+/* Rodapé do wizard de combo (botões e preço) */
+.nativa-combo-wizard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto; /* Empurra para o final da sheet */
+    flex-shrink: 0; /* Impede que o rodapé encolha */
+}
+
+/* Exibição do preço do combo no rodapé */
+.nativa-combo-price-display {
+    flex-basis: 40%;
+    text-align: center;
+}
+
+.nativa-combo-price-display span {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-combo-price-display strong {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+/* Garante padding consistente para os botões do rodapé */
+#nativa-combo-wizard-sheet .nativa-button-secondary,
+#nativa-combo-wizard-sheet .nativa-button-primary {
+    padding: var(--button-padding-sm);
+}
+
+#nativa-combo-wizard-sheet
+    .nativa-addon-item-button-wrapper
+    input:checked
+    + .nativa-addon-item-button-label {
+    background-color: var(--md-sys-color-on-secondary-container);
+    color: var(--md-sys-color-secondary-container);
+    border-radius: var(--border-radius-full);
+}
+
+.nativa-combo-product-option .nativa-combo-product-addons-container {
+    padding: var(--space-md);
+}
+
+button#nativa-combo-wizard-next-btn {
+    flex: 1;
+    padding: var(--button-padding-sm) !important;
+}
+
+button#nativa-combo-wizard-back-btn {
+    flex: 1;
+    padding: var(--button-padding-sm) !important;
+}

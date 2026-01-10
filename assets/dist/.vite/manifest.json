@@ -1,0 +1,33 @@
+{
+  "_nativa-ui-helpers.DctCh3HV.js": {
+    "file": "nativa-ui-helpers.DctCh3HV.js",
+    "name": "nativa-ui-helpers"
+  },
+  "assets/src/js/core/main.js": {
+    "file": "main.Dw0voc8V.js",
+    "name": "main",
+    "src": "assets/src/js/core/main.js",
+    "isEntry": true,
+    "imports": [
+      "_nativa-ui-helpers.DctCh3HV.js"
+    ],
+    "dynamicImports": [
+      "node_modules/workbox-window/build/workbox-window.prod.es5.mjs"
+    ]
+  },
+  "assets/src/js/dashboard/dashboard-main.js": {
+    "file": "dashboard.Bca_gcJK.js",
+    "name": "dashboard",
+    "src": "assets/src/js/dashboard/dashboard-main.js",
+    "isEntry": true,
+    "imports": [
+      "_nativa-ui-helpers.DctCh3HV.js"
+    ]
+  },
+  "node_modules/workbox-window/build/workbox-window.prod.es5.mjs": {
+    "file": "workbox-window.prod.es5.CwtvwXb3.js",
+    "name": "workbox-window.prod.es5",
+    "src": "node_modules/workbox-window/build/workbox-window.prod.es5.mjs",
+    "isDynamicEntry": true
+  }
+}

@@ -1,0 +1,131 @@
+/* assets/css/modules/_reorder-sheet.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+
+#nativa-reorder-sheet .nativa-bottom-sheet-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh; /* Permite mais espaço vertical */
+}
+
+.nativa-reorder-header {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.nativa-reorder-header p {
+    font-size: 0.95em;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-xs);
+}
+
+.nativa-reorder-items-container {
+    overflow-y: auto;
+
+    /* Espaço para a scrollbar */
+    /* Compensa o padding */
+}
+
+.reorder-item-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    padding: var(--space-md) 0;
+    border-bottom: var(--border-width-sm) solid
+        var(--md-sys-color-surface-container-low);
+}
+
+.reorder-item-card:last-child {
+    border-bottom: none;
+}
+
+.reorder-item-card.is-unavailable {
+    opacity: 0.5;
+}
+
+.reorder-item-card.is-unavailable .reorder-item-info,
+.reorder-item-card.is-unavailable .reorder-item-price {
+    text-decoration: line-through;
+}
+
+.reorder-item-checkbox {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.reorder-item-info {
+    flex-grow: 1;
+}
+
+.reorder-item-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-lg);
+}
+
+.reorder-item-details {
+    font-size: 0.85em;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: var(--space-xs);
+}
+
+.reorder-item-combo-selection,
+.reorder-item-addons-sublist {
+    margin-top: 6px;
+    padding-left: var(--space-lg); /* Indenta os itens aninhados */
+    list-style: none;
+}
+
+.reorder-item-addons-sublist li {
+    padding: 2px 0;
+}
+
+.reorder-item-unavailable-note {
+    font-size: 0.8em;
+    font-style: italic;
+    color: var(--md-sys-color-error);
+    margin-top: var(--space-xs);
+}
+
+.reorder-item-price {
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    flex-shrink: 0;
+    font-size: var(--font-size-lg);
+}
+
+.nativa-reorder-footer {
+    flex-shrink: 0;
+    padding-top: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.nativa-reorder-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: var(--font-size-xl) !important;
+}
+
+.nativa-reorder-summary strong {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-primary);
+}
+
+.nativa-toggle-switch.is-small .nativa-toggle-ui {
+    width: 42px;
+    height: 26px;
+}
+
+.nativa-toggle-switch.is-small .nativa-toggle-ui::after {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+}
+
+.nativa-toggle-switch.is-small input:checked + .nativa-toggle-ui::after {
+    transform: translateX(16px);
+}

@@ -1,0 +1,8 @@
+{
+    "require": {
+        "google/apiclient": "^2.0",
+        "endroid/qr-code": "^5.0",
+        "minishlink/web-push": "^9.0",
+        "nfephp-org/sped-nfe": "^5.2"
+    }
+}

@@ -1,0 +1,162 @@
+/* assets/css/modules/_product-sheet.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+/* ATUALIZADO (ATUAL 2): Adiciona layout flex para cabeçalho fixo e conteúdo rolável. */
+
+/* --- INÍCIO DA MODIFICAÇÃO: Estrutura Flex para Conteúdo Rolável --- */
+#nativa-product-sheet .nativa-bottom-sheet-content {
+    padding: 0;
+    /* Transforma o conteúdo da sheet em um container flexível vertical */
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Garante que ocupe a altura máxima permitida */
+}
+
+.product-details-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-lg) var(--space-xl) 0; /* Adiciona padding */
+    flex-shrink: 0; /* Impede que o cabeçalho encolha */
+}
+/* --- FIM DA MODIFICAÇÃO --- */
+
+#product-details-title {
+    font-size: var(--font-size-2xl);
+    color: var(--md-sys-color-tertiary);
+    margin-bottom: 0;
+    text-align: center;
+    font-weight: var(--font-weight-extrabold);
+}
+
+/* --- INÍCIO DA CORREÇÃO --- */
+/* Garante que a descrição do produto na ficha não seja truncada,
+   anulando qualquer estilo genérico que possa ser aplicado. */
+#product-details-description {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: var(--line-height-normal);
+    text-align: center;
+    padding: 0 var(--space-lg); /* Adiciona padding lateral */
+    /* Anula as propriedades de truncamento */
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    -webkit-box-orient: unset;
+    overflow: visible;
+    text-overflow: unset;
+    min-height: auto;
+    margin-top: var(--space-sm);
+}
+/* --- FIM DA CORREÇÃO --- */
+
+.nativa-product-details-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Ajusta padding */
+    flex-shrink: 0;
+    gap: var(--space-lg);
+    background-color: var(--md-sys-color-surface);
+    width: 100%;
+}
+
+#product-details-price {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-tertiary);
+}
+
+.nativa-product-quantity-selector {
+    padding: var(--space-sm);
+    background: var(--md-sys-color-surface-container-lowest);
+    display: flex;
+    align-items: center;
+    border-radius: var(--border-radius-full);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+#product-quantity {
+    width: 28px;
+    height: 32px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO: Adicionais (conteúdo com rolagem) --- */
+#product-details-addons {
+    flex-grow: 1; /* Permite que este elemento cresça e ocupe o espaço disponível */
+    overflow-y: auto; /* Adiciona a barra de rolagem quando o conteúdo transborda */
+    min-height: 0; /* Correção essencial para o scroll funcionar em um container flex */
+    /* padding: 0 var(--space-xl); */
+    width: 100%;
+}
+/* --- FIM DA MODIFICAÇÃO --- */
+
+.nativa-product-sheet-image-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: var(--md-sys-color-surface-container);
+    border-top-left-radius: var(--border-radius-larger);
+    border-top-right-radius: var(--border-radius-larger);
+    overflow: hidden;
+}
+
+#product-details-image {
+    width: 70%;
+    height: 70%;
+    object-fit: cover;
+}
+
+#nativa-save-favorite-container .nativa-form-group {
+    background: transparent;
+    margin-top: var(--space-lg);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO (REQUISITOS 1, 2, 3) --- */
+
+/* Transforma o span de preço em um container flex para alinhar pontos/badge */
+#product-details-price {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
+    position: relative; /* Necessário para posicionar o badge */
+}
+
+/* Estilo para o custo em pontos (Req 2) */
+.product-points-cost {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(
+        --md-sys-color-tertiary
+    ); /* Cor de destaque (como era o preço) */
+}
+
+.product-points-cost .material-symbols-rounded {
+    font-size: var(--icon-size-md); /* 1.5rem */
+}
+
+/* Estilo para o badge de custo adicional (Req 3) */
+.product-price-badge {
+    position: absolute;
+    top: -18px; /* Posiciona acima do display de pontos */
+    /* Posiciona no canto */
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-secondary-container);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-full);
+
+    /* Contorno */
+    right: 0;
+}
+/* --- FIM DA MODIFICAÇÃO --- */

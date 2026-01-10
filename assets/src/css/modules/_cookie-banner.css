@@ -1,0 +1,204 @@
+/* assets/css/modules/_cookie-banner.css */
+/* ATUALIZADO: Aplicação das novas variáveis de cor e tipografia. */
+/* ATUALIZADO (ATUAL): Aplica a nova paleta de cores e os tokens de sombra, padding e fontes. */
+
+.nativa-cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-index-sheet); /* Acima da navbar, abaixo das sheets */
+
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-lg);
+
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        transform 0.4s var(--md-sys-motion-easing),
+        opacity 0.4s ease,
+        visibility 0s 0.4s;
+}
+
+.nativa-cookie-banner.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition:
+        transform 0.4s var(--md-sys-motion-easing),
+        opacity 0.4s ease,
+        visibility 0s 0s;
+}
+
+.nativa-cookie-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nativa-cookie-text {
+    flex-grow: 1;
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0;
+}
+
+.nativa-cookie-privacy-link {
+    color: var(--md-sys-color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+}
+
+.nativa-cookie-accept-button {
+    flex-shrink: 0;
+    padding: var(--button-padding-md);
+    font-size: var(--font-size-sm);
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: var(--border-radius-full);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 600px) {
+    .nativa-cookie-content {
+        flex-direction: column;
+        gap: var(--space-lg);
+        text-align: center;
+    }
+
+    .nativa-cookie-accept-button {
+        width: 100%;
+    }
+}
+
+.welcome-sheet-content.nativa-bottom-sheet-body ol {
+    padding: 0 var(--space-2xl);
+    margin: var(--space-2xl);
+    font-size: var(--font-size-lg);
+    border-left: solid 2px var(--md-sys-color-outline-variant);
+}
+
+.welcome-sheet-content.nativa-bottom-sheet-body li {
+    margin-bottom: var(--space-sm);
+}
+
+.welcome-sheet-content.nativa-bottom-sheet-body h3 {
+    text-align: center;
+}
+
+/* assets/css/modules/_base.css */
+/* ... (histórico de versões anterior) ... */
+/* ATUALIZADO (ATUAL 4): Adiciona overflow-x: hidden para prevenir a rolagem horizontal indesejada. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    transition:
+        background-color var(--transition-default),
+        color var(--transition-default);
+    padding-bottom: 100px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Padrão */
+    /* --- INÍCIO DA MODIFICAÇÃO --- */
+    overflow-x: hidden !important; /* Previne a barra de rolagem horizontal */
+    /* --- FIM DA MODIFICAÇÃO --- */
+}
+
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-family-primary);
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.03em;
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-lg);
+}
+h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-sm);
+}
+h4 {
+    font-size: var(--font-size-lg);
+}
+
+p.cookie-notice {
+    text-align: center;
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-lg);
+}
+
+body.nativa-no-scroll {
+    overflow: hidden !important;
+    height: 100vh;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: none;
+    box-shadow: none;
+}
+
+button {
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: var(--font-family-primary);
+}
+
+/* Oculta a janela de autenticação intermediária do Nextend Social Login */
+.nsl-container-pop-up {
+    display: none !important;
+}
+
+.wp-block-group.alignfull.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+    padding: 0 !important;
+    margin: 0;
+}
+
+main#wp--skip-link--target {
+    padding: 0;
+    margin: 0;
+}

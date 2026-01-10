@@ -1,0 +1,104 @@
+/* assets/css/modules/_checkout-login.css */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+/* ATUALIZADO (ATUAL 2): Aplica os novos tokens de sombra e tamanho de ícone. */
+
+/* Container dos botões de login social */
+#nativa-social-login-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md); /* Espaçamento entre os botões de login */
+    align-items: center;
+}
+
+/* Estilização geral para CADA botão do Nextend Social Login */
+.nextend-social-login-button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    width: 100%;
+    padding: 14px !important;
+    border-radius: var(--border-radius-full) !important;
+    font-family: var(--font-family-primary) !important;
+    font-weight: var(--font-weight-bold) !important;
+    font-size: var(--font-size-lg) !important;
+    text-transform: none !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    border: var(--border-width-sm) solid var(--md-sys-color-outline) !important;
+    transition: var(--transition-default);
+}
+
+.nextend-social-login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md) !important;
+    filter: brightness(1.1);
+}
+
+/* Estilização do ícone dentro do botão */
+.nextend-social-login-button .nsl-icon {
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+}
+
+.nextend-social-login-button .nsl-icon svg {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+}
+
+/* Estilização do texto dentro do botão */
+.nextend-social-login-button .nsl-text {
+    line-height: var(--line-height-tight) !important;
+    font-size: 1em !important; /* Herda o tamanho da fonte do botão */
+    padding: 0 !important;
+}
+
+/* --- Estilos Específicos por Provedor --- */
+
+/* Botão do Google */
+.nextend-social-login-button-google {
+    background-color: var(--md-sys-color-surface-container-highest) !important;
+    color: var(--md-sys-color-on-surface) !important;
+    border-color: #ffffff !important;
+}
+
+/* Botão do Facebook */
+.nextend-social-login-button-facebook {
+    background-color: #1877f2 !important; /* Cor oficial do Facebook */
+    color: #ffffff !important;
+    border-color: #1877f2 !important;
+}
+
+/* Separador "ou" */
+.nativa-separator-or {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--md-sys-color-outline);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.nativa-separator-or::before,
+.nativa-separator-or::after {
+    content: '';
+    flex: 1;
+    border-bottom: var(--border-width-sm) solid
+        var(--md-sys-color-outline-variant);
+}
+
+.nativa-separator-or:not(:empty)::before {
+    margin-right: 0.5em;
+}
+
+.nativa-separator-or:not(:empty)::after {
+    margin-left: 0.5em;
+}
+
+/* --- INÍCIO DA CORREÇÃO DO SCRIM --- */
+/* Garante que a sheet de login, quando inescapável, fique acima de todo o conteúdo da página */
+#nativa-login-prompt-sheet.nativa-bottom-sheet.is-unclosable.is-visible {
+    z-index: 9999; /* Z-index muito alto para garantir a sobreposição */
+}
+/* --- FIM DA CORREÇÃO DO SCRIM --- */

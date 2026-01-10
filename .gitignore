@@ -1,0 +1,15 @@
+# Dependências (Nunca suba isso)
+/vendor
+/node_modules
+/package-lock.json
+/composer.lock
+
+# Arquivos de sistema e IDE (Lixo)
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Configurações sensíveis (Segurança básica)
+.env
+wp-config.php

@@ -1,0 +1,360 @@
+/* assets/css/modules/_address-wizard.css */
+
+/* --- HEADER DO WIZARD --- */
+.nativa-wizard-header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.nativa-wizard-header-content .material-symbols-rounded {
+    font-size: var(--icon-size-2xl);
+    color: var(--md-sys-color-outline-variant);
+    margin-bottom: var(--space-xs);
+}
+
+.address-progress {
+    width: 100%;
+    margin-top: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.address-progress .step-text {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-xs);
+}
+
+.nativa-wizard-progress {
+    width: 70%;
+    height: 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+    background-color: var(--md-sys-color-surface-container-low);
+}
+
+.nativa-wizard-progress::-webkit-progress-bar {
+    background-color: var(--md-sys-color-outline-variant);
+}
+
+.nativa-wizard-progress::-webkit-progress-value {
+    background-color: var(--md-sys-color-primary);
+    border-radius: var(--border-radius-full);
+    transition: width 0.3s ease;
+}
+
+/* --- ESTRUTURA DO WIZARD --- */
+.nativa-wizard-step {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeInStep 0.3s ease-out;
+}
+
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nativa-step-description {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --- INPUTS & FORM ELEMENTS (CORREÇÃO DE ESTILO) --- */
+
+.nativa-wizard-section {
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.wizard-section-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.wizard-section-title .optional-text {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: var(--font-weight-normal);
+}
+
+/* Restaura o estilo do input (igual ao .nativa-form-group input) */
+.nativa-wizard-section .nativa-input {
+    background-color: var(
+        --md-sys-color-surface-container-lowest
+    ); /* Fundo escuro padrão */
+    border: none;
+    border-radius: var(--border-radius-medium);
+    padding: var(--space-lg);
+    color: var(--md-sys-color-on-surface);
+    width: 100%;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-primary);
+    outline: 2px solid var(--md-sys-color-outline-variant); /* Borda padrão */
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.nativa-wizard-section .nativa-input:focus {
+    outline-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 4px
+        color-mix(in srgb, var(--md-sys-color-primary) 25%, transparent);
+}
+
+/* Estilo Organizado para o Toggle */
+.nativa-wizard-toggle-container {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    margin-top: var(--space-md);
+    cursor: pointer;
+}
+
+.nativa-wizard-toggle-container .nativa-toggle-switch {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.nativa-wizard-toggle-container .nativa-toggle-label {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    flex-grow: 1; /* Ocupa o espaço restante */
+    cursor: pointer;
+}
+
+/* --- BUSCA & LISTA (Etapa 1) --- */
+.nativa-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nativa-input-wrapper .prefix-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--md-sys-color-outline);
+    pointer-events: none;
+}
+
+#address-search-input {
+    padding-left: 48px;
+    padding-right: 40px;
+    text-align: left; /* Busca alinhada a esquerda */
+}
+
+#clear-search-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nativa-search-results-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: var(--space-md);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    background-color: var(--md-sys-color-surface);
+}
+
+.nativa-search-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--md-sys-color-surface-container);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nativa-search-item:last-child {
+    border-bottom: none;
+}
+
+.nativa-search-item:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.nativa-search-item .item-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: var(--space-md);
+}
+
+.nativa-search-item .item-title {
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+}
+
+.nativa-search-item .item-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-search-item .item-icon {
+    color: var(--md-sys-color-primary);
+}
+
+.empty-search-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    color: var(--md-sys-color-outline);
+    text-align: center;
+    height: 100%;
+}
+
+.empty-search-placeholder .material-symbols-rounded {
+    font-size: 48px;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+/* --- DETALHES (Etapa 2) --- */
+.selected-street-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--md-sys-color-surface-container-low);
+    border-radius: var(--border-radius-large);
+    margin-bottom: 20px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Nova classe para o container interno de ícone + texto */
+.summary-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Nova classe para o ícone de localização */
+.summary-icon {
+    color: var(--md-sys-color-primary);
+}
+
+.selected-street-summary .street-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: var(
+        --space-md
+    ); /* Opcional se usar gap no pai, mas mantido para segurança */
+    flex-grow: 1;
+}
+
+.selected-street-summary .street-name {
+    font-size: 0.95rem; /* Movido do inline */
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.selected-street-summary .street-bairro {
+    font-size: 0.85rem; /* Movido do inline */
+    color: var(--md-sys-color-outline);
+}
+
+#change-street-btn {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: var(--font-weight-bold);
+}
+
+/* Espaçamento para o grupo de telefone/numero */
+.nativa-form-group-split.mt-md {
+    margin-top: 20px;
+}
+
+/* ... (Mantenha a seção CHIPS & BOTÕES) ... */
+
+/* --- AJUSTES FINAIS DOS BOTÕES (Etapa 3) --- */
+.wizard-actions {
+    margin-top: auto;
+    padding-top: var(--space-xl);
+    display: flex;
+    gap: var(--space-md);
+}
+
+/* Remove a regra genérica anterior de flex: 1 para permitir customização */
+
+.wizard-actions .btn-back {
+    flex: 1; /* Ocupa menos espaço */
+}
+
+.wizard-actions .btn-finish {
+    flex: 2; /* Ocupa mais espaço (destaque) */
+}
+
+.full-width {
+    width: 100%;
+}
+
+/* --- NOVAS CLASSES PARA A LISTA DE BUSCA (renderSearchResults) --- */
+.nativa-search-item .item-main-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+button#get-geolocation-btn {
+    background: var(--md-sys-color-warning-transparent);
+    margin: var(--space-lg) 0;
+}
+
+button.nativa-chip {
+    background: red;
+}
+
+.apelido-chips {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+}
+
+button.nativa-chip {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: var(--button-padding-sm);
+    border-radius: var(--border-radius-full);
+    border: 0;
+}

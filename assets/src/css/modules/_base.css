@@ -1,0 +1,103 @@
+/* assets/css/modules/_base.css */
+/* ... (histórico de versões anterior) ... */
+/* ATUALIZADO (ATUAL 4): Adiciona overflow-x: hidden para prevenir a rolagem horizontal indesejada. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    transition:
+        background-color var(--transition-default),
+        color var(--transition-default);
+    padding-bottom: 100px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Padrão */
+    overflow-x: hidden !important; /* Previne a barra de rolagem horizontal */
+}
+
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-family-primary);
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.03em;
+    /* text-transform: lowercase; /* Garante que todo o texto comece em minúsculas */
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+h2 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-lg);
+}
+h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-sm);
+}
+h4 {
+    font-size: var(--font-size-lg);
+}
+
+p {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-sm);
+}
+
+body.nativa-no-scroll {
+    overflow: hidden !important;
+    height: 100vh;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: none;
+    box-shadow: none;
+}
+
+button {
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: var(--font-family-primary);
+}
+
+/* Oculta a janela de autenticação intermediária do Nextend Social Login */
+.nsl-container-pop-up {
+    display: none !important;
+}
+
+.wp-block-group.alignfull.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained {
+    padding: 0 !important;
+    margin: 0;
+}
+
+main#wp--skip-link--target {
+    padding: 0;
+    margin: 0;
+}

@@ -1,0 +1,675 @@
+/* assets/css/modules/_cardapio-combos.css */
+/* VERSÃƒO OTIMIZADA: Adicionados estilos para a barra de busca. */
+/* ATUALIZADO: AplicaÃ§Ã£o das novas variÃ¡veis de cor e tipografia. */
+/* ATUALIZADO: Adicionados estilos para o tooltip de "Como Pedir". */
+/* CORRIGIDO: LÃ³gica de visibilidade do tooltip para remover do fluxo do documento. */
+/* MODIFICADO: ExcluÃ­do FAB. Adicionado CSS para Ã­ndice de categorias e botÃ£o de favoritos. ReformulaÃ§Ã£o do card de produto. */
+/* CORRIGIDO: Layout da barra de busca e botÃ£o de favoritos. */
+/* ATUALIZADO 2: Oculta a barra de rolagem do Ã­ndice de categorias. */
+/* ATUALIZADO 3: Adiciona estilos para o cabeÃ§alho fixo (sticky). */
+/* ATUALIZADO (ATUAL): Refatorado para usar os novos tokens de design do _variables.css. */
+/* ATUALIZADO (ATUAL 2): Aplica a nova paleta de cores e os tokens de sombra, padding e Ã­cones. */
+/* ATUALIZADO (ATUAL 3): Adiciona estilo para a nova descriÃ§Ã£o da categoria. */
+
+/* --- INÃCIO DO REFINAMENTO DE DESIGN (HEADER) --- */
+.nativa-menu-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-index-sticky);
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: var(--space-md) var(--space-md);
+}
+
+.nativa-menu-header-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    overflow: hidden; /* Essencial para a animaÃ§Ã£o de max-height */
+    max-height: 100px; /* Um valor inicial maior que a altura real */
+    opacity: 1;
+    transition:
+        max-height 0.4s ease-in-out,
+        opacity 0.3s ease-in-out,
+        margin-bottom 0.4s ease-in-out;
+    will-change:
+        max-height, opacity, margin-bottom; /* OtimizaÃ§Ã£o para o navegador */
+    background: var(--md-sys-color-surface-container-low);
+    padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+}
+
+.nativa-menu-header-bar.is-hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+}
+
+.nativa-menu-index-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg); /* EspaÃ§amento entre o logo e as pÃ­lulas */
+}
+
+.nativa-menu-logo-container {
+    flex-shrink: 0; /* Impede que o logo seja espremido */
+}
+
+.nativa-category-index-wrapper {
+    flex-grow: 1; /* Faz o wrapper das pÃ­lulas ocupar o espaÃ§o restante */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-left: calc(-2 * var(--space-md)); /* Compensa o padding do pai */
+    margin-right: calc(-1.25 * var(--space-sm)); /* Compensa o padding do pai */
+}
+
+.nativa-search-bar-container {
+    position: relative;
+    flex-grow: 1;
+    box-shadow: none; /* Remove sombra individual */
+}
+
+.nativa-search-bar-container .material-symbols-rounded {
+    position: absolute;
+    left: var(--space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-sys-color-on-surface-variant);
+    pointer-events: none;
+    z-index: 1;
+    font-size: var(--icon-size-md);
+}
+
+#nativa-product-search {
+    width: 100%;
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border: 0;
+    border-radius: var(--border-radius-large);
+    padding: 14px var(--space-lg) 14px 50px;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-default);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+#nativa-product-search:focus {
+    border-color: var(--md-sys-color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+}
+
+#nativa-product-search::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.8;
+}
+
+#nativa-product-search::-webkit-search-decoration,
+#nativa-product-search::-webkit-search-cancel-button,
+#nativa-product-search::-webkit-search-results-button,
+#nativa-product-search::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+}
+
+#nativa-favorite-filter-btn {
+    flex-shrink: 0;
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 0;
+    border-radius: var(--border-radius-large);
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    display: flex;
+    gap: var(--space-sm);
+    transition: var(--transition-default);
+    height: 100% !important;
+    align-items: center;
+}
+/* --- FIM DO REFINAMENTO DE DESIGN (HEADER) --- */
+
+#nativa-favorite-filter-btn .material-symbols-rounded {
+    font-size: var(--icon-size-md);
+}
+
+#nativa-favorite-filter-btn:hover {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-color: var(--md-sys-color-primary);
+}
+
+#nativa-favorite-filter-btn.is-active {
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+    border-color: var(--md-sys-color-error);
+}
+
+#nativa-favorite-filter-btn.is-active .material-symbols-rounded {
+    font-variation-settings: 'FILL' 1;
+}
+
+.nativa-category-index-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.nativa-category-pills-container {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    flex-direction: row;
+    align-items: center;
+}
+
+/* --- INÃCIO DA MODIFICAÃ‡ÃƒO --- */
+.nativa-category-pills-container::before,
+.nativa-category-pills-container::after {
+    content: '';
+    display: block;
+    flex-shrink: 0;
+    width: var(--space-lg);
+}
+/* --- FIM DA MODIFICAÃ‡ÃƒO --- */
+
+.nativa-category-pill {
+    flex-shrink: 0;
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-variant);
+    border: var(--border-width-sm) solid transparent;
+    border-radius: var(--border-radius-full);
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.nativa-category-pill.is-active {
+    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+}
+
+/* Estilos gerais para as listas de produtos e grupos de produtos */
+.nativa-product-list,
+.nativa-product-list-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+}
+
+.nativa-product-card {
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border-radius: var(--border-radius-large);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition-default);
+    margin-bottom: 0;
+    padding: var(--space-xl);
+    width: 100% !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.nativa-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--md-sys-color-outline);
+}
+
+.nativa-product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.nativa-product-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-lg);
+}
+
+.nativa-product-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 22px;
+}
+
+.nativa-product-tag {
+    background-color: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-surface);
+    padding: 3px 10px;
+    border-radius: var(--border-radius-smaller);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    line-height: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nativa-product-name {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+    line-height: var(--line-height-tight);
+    flex-grow: 1;
+}
+
+/* --- INÃCIO DA CORREÃ‡ÃƒO --- */
+.nativa-product-description {
+    font-size: var(--font-size-sm);
+    color: #e9e9e9;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Ajuste fino da altura da linha para garantir um corte preciso */
+    line-height: 1.4;
+    /* Define uma altura mÃ¡xima baseada em 2 linhas de texto */
+    max-height: calc(var(--font-size-sm) * 1.4 * 2);
+    margin-bottom: var(--space-md);
+}
+/* --- FIM DA CORREÃ‡ÃƒO --- */
+
+.nativa-product-card .card-separator {
+    height: var(--border-width-md);
+    background-color: var(--md-sys-color-outline-variant);
+    margin: var(--space-xs) 0;
+    border: none;
+}
+
+.nativa-product-card-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: auto;
+}
+
+button.nativa-product-favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--md-sys-color-outline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin: calc(-1 * var(--space-sm));
+}
+
+button.delete-custom-favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--md-sys-color-outline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin: calc(-1 * var(--space-sm));
+}
+
+.nativa-product-favorite-btn .material-symbols-rounded {
+    font-size: var(--icon-size-md);
+}
+
+.nativa-product-favorite-btn:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+}
+
+.nativa-product-favorite-btn.is-favorite {
+    color: var(--md-sys-color-error);
+}
+
+.nativa-product-favorite-btn.is-favorite .material-symbols-rounded {
+    font-variation-settings: 'FILL' 1;
+}
+
+.nativa-product-price-wrapper {
+    flex-grow: 1;
+    text-align: right;
+}
+
+.nativa-product-promo-price {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-product-original-price {
+    text-decoration: line-through;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-left: var(--space-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.nativa-product-price {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.nativa-product-tags-and-price {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-grow: 1;
+    justify-content: space-between;
+}
+.nativa-product-card-footer .nativa-product-tags {
+    margin-bottom: 0;
+}
+
+.nativa-menu-category-title {
+    margin: 0;
+    font-size: var(--font-size-3xl);
+    text-align: center;
+    color: var(--md-sys-color-on-surface);
+    text-align: right;
+}
+
+.nativa-menu-category-description {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+    margin-top: var(--space-md);
+    padding: 0 var(--space-lg);
+    max-width: 60ch; /* Limita a largura para melhor legibilidade */
+}
+
+.nativa-combo-card .nativa-product-description {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    max-height: none;
+    overflow: visible;
+    min-height: auto;
+    margin-bottom: 0;
+}
+
+.nativa-combo-card .nativa-product-favorite-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nativa-combo-card .nativa-product-favorite-btn[disabled]:hover {
+    background-color: transparent;
+    color: var(--md-sys-color-outline);
+}
+
+.nativa-combo-details-grid {
+    display: grid;
+    grid-template-columns: 2fr auto;
+    gap: var(--space-lg);
+    align-items: start;
+    margin: var(--space-sm) 0 var(--space-md) 0;
+}
+
+.combo-price-per-person-column {
+    text-align: right;
+    padding-left: var(--space-md);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.combo-price-per-person-column .label {
+    font-size: var(--font-size-xs);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: -2px;
+    font-weight: var(--font-weight-bold);
+    display: block;
+}
+
+.combo-price-per-person-column .value {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-menu-category-section {
+    background: var(--md-sys-color-surface);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-larger);
+    scroll-margin-top: 140px;
+}
+
+.nativa-fab-container,
+.nativa-fab-list,
+.nativa-fab,
+.nativa-fab-list-item {
+    display: none !important;
+}
+
+.nativa-popup-scrim {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: var(--z-index-popup);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.3s ease,
+        visibility 0s 0.3s;
+}
+
+.nativa-popup-scrim.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.nativa-popup-content {
+    background-color: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    padding: var(--space-xl);
+    border-radius: var(--border-radius-larger);
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    align-items: center;
+}
+
+.nativa-popup-scrim.is-visible .nativa-popup-content {
+    transform: scale(1);
+}
+
+#nativa-how-to-order-tooltip .nativa-how-to-order-header {
+    display: flex;
+    gap: var(--space-md);
+    flex-direction: column;
+    align-items: center;
+}
+
+#nativa-how-to-order-tooltip
+    .nativa-how-to-order-icon
+    .material-symbols-rounded {
+    font-size: var(--icon-size-3xl);
+    color: var(--md-sys-color-outline);
+}
+
+#nativa-how-to-order-tooltip .nativa-how-to-order-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+    color: inherit;
+    text-align: center;
+}
+
+#nativa-how-to-order-tooltip .nativa-how-to-order-content {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-loose);
+    margin: var(--space-lg) 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+#nativa-how-to-order-tooltip .nativa-how-to-order-content p {
+    margin-bottom: var(--space-sm);
+    color: inherit;
+}
+#nativa-how-to-order-tooltip .nativa-how-to-order-content p:last-child {
+    margin-bottom: 0;
+}
+
+#nativa-how-to-order-tooltip #nativa-how-to-order-got-it-btn {
+    padding: var(--button-padding-md);
+    font-size: var(--font-size-md);
+    align-self: flex-end;
+    width: fit-content;
+    margin-top: var(--space-sm);
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+.nativa-category-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nativa-modality-options {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.nativa-modality-options > .nativa-order-button {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-large);
+    background: var(--md-sys-color-surface-container-lowest);
+    width: 100%;
+}
+
+.nativa-menu-logo-container img {
+    border-radius: 999px;
+}
+
+.nativa-combo-wizard-header img {
+    width: 80px;
+    height: 80px;
+}
+
+.product-details-header img {
+    width: 80px;
+    height: 80px;
+}
+
+.nativa-menu-logo-container {
+    display: flex;
+}
+
+.nativa-product-favorite-summary {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.nativa-product-favorite-summary li {
+    padding: 2px 0;
+}
+
+.nativa-product-favorite-summary.is-nested {
+    padding-left: var(--space-lg);
+    margin-top: var(--space-xs);
+}
+
+.nativa-menu-category-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+}
+
+.nativa-addon-item-button-wrapper {
+    font-size: var(--font-size-md);
+}
+
+.nativa-product-placeholder-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h4.nativa-addon-group-title {
+    text-align: center;
+    padding: var(--space-lg);
+}
+
+.nativa-menu-top-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+label.nativa-addon-item-button-label.is-in-combo {
+    background: var(--md-sys-color-surface-container-low);
+}
+
+div#nativa-modality-closed-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button#nativa-modality-closed-confirm-btn {
+    padding: var(--button-padding-lg);
+    width: 100%;
+}
+
+button.nativa-button-secondary.is-small.shuffle-sabores-btn {
+    font-size: var(--font-size-lg);
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+}
+
+button.nativa-addon-item-button-label.suggestion-sabores-btn {
+    border: 0;
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.suggestion-sabores-btn .material-symbols-rounded {
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+p.nativa-addon-group-description {
+    text-align: center;
+}

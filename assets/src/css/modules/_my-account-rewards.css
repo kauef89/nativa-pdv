@@ -1,0 +1,46 @@
+button.nativa-reward-card.nativa-redeem-product-btn {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    background: var(--md-sys-color-surface-container-lowest);
+    border: 0;
+    border-radius: var(--border-radius-medium);
+    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-bold);
+    min-width: unset; /* Remove a largura mÃ­nima para o grid funcionar */
+    flex-shrink: unset; /* Permite que os cards encolham ou cresÃ§am conforme o grid */
+}
+
+.nativa-rewards-list-scroller {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.nativa-reward-card-cost {
+    margin-top: var(--space-xs);
+    display: flex;
+    align-items: center;
+    padding: var(--button-padding-sm);
+    background: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-primary);
+    border-radius: var(--border-radius-full);
+}
+
+div#push-notification-prompt {
+    background: var(--md-sys-color-surface);
+    padding: var(--space-md);
+    position: relative;
+    align-self: center;
+    width: 100%;
+}
+
+.loyalty-balance-value {
+    display: flex;
+    background: var(--md-sys-color-success-transparent);
+    padding: var(--button-padding-sm);
+    flex-direction: row;
+    justify-content: space-evenly;
+    border-radius: var(--border-radius-small);
+    color: var(--md-sys-color-success);
+}

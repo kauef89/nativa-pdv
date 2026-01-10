@@ -1,0 +1,266 @@
+/* assets/css/modules/_my-account-payment.css */
+/* Estilos para os componentes de pagamento (PIX manual, PIX Sicredi) da página "Minha Conta". */
+/* VERSÃO ATUALIZADA (LAYOUT): Adiciona estilos flexbox para o layout de duas colunas do PIX. */
+
+/* Informações de Pagamento PIX Manual */
+.nativa-pix-manual-info {
+    padding: var(--space-md);
+    border-radius: var(--border-radius-large);
+    background-color: var(--md-sys-color-surface-container-lowest);
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+    align-items: flex-start;
+    border: 0;
+}
+.nativa-pix-manual-info.is-success {
+    background-color: var(--md-sys-color-success-transparent);
+    align-items: center;
+}
+.nativa-pix-manual-info .nativa-info-icon .material-symbols-rounded {
+    font-size: var(--icon-size-2xl);
+    color: var(--md-sys-color-on-surface-variant);
+}
+.nativa-pix-manual-info.is-success .nativa-info-icon .material-symbols-rounded {
+    color: var(--md-sys-color-success);
+}
+.nativa-pix-manual-info .nativa-info-content h4 {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-xs);
+}
+.nativa-pix-manual-info.is-success .nativa-info-content h4 {
+    color: var(--md-sys-color-success);
+}
+.nativa-pix-manual-info p {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-sm);
+    margin: 0;
+    text-align: left;
+    line-height: var(--line-height-tight);
+}
+.nativa-pix-manual-info .pix-details {
+    text-align: left;
+    border-left: solid 4px var(--md-sys-color-outline);
+    padding-left: var(--space-md);
+}
+.nativa-pix-manual-info .pix-details p {
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-md);
+}
+.nativa-pix-manual-info .pix-details p:last-child {
+    margin-bottom: 0;
+}
+#copy-current-order-pix-key-btn {
+    gap: var(--space-sm);
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO (LAYOUT PIX SICREDI) --- */
+
+/* Container Principal */
+.nativa-pix-payment-wrapper-my-account {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Linha 1: Título e Temporizador */
+.pix-payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.nativa-pix-title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* Linha 2: Corpo com Duas Colunas */
+.pix-payment-body {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--md-sys-color-outline);
+}
+
+.pix-payment-body-left {
+    flex-shrink: 0; /* Impede que o QR code encolha */
+}
+
+.pix-payment-body-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    flex-grow: 1;
+    color: var(--md-sys-color-on-surface);
+}
+
+/* Ajustes nos elementos internos */
+.nativa-pix-qr-code {
+    max-width: 120px;
+    border-radius: var(--border-radius-small);
+    overflow: hidden;
+    padding: var(--space-sm);
+    background: white;
+}
+.nativa-pix-qr-code img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.nativa-pix-instructions {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+}
+.nativa-pix-copia-e-cola-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+.nativa-pix-copia-e-cola-wrapper input {
+    flex-grow: 1;
+    min-width: 0;
+    border-right: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.nativa-pix-copia-e-cola-wrapper button {
+    border-radius: var(--border-radius-full);
+    padding: var(--button-padding-md);
+    width: fit-content;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-size: var(--font-size-sm);
+}
+
+/* Rodapé */
+.nativa-pix-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+/* Barra de Progresso de Expiração do PIX */
+.pix-expiration-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface);
+    flex-basis: 200px; /* Largura base para o timer */
+    flex-grow: 1;
+}
+
+#pix-expiration-timer {
+    font-weight: var(--font-weight-bold);
+    min-width: 45px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.pix-progress-bar-container {
+    flex-grow: 1;
+    height: 8px;
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+}
+
+.pix-progress-bar {
+    height: 100%;
+    width: 100%;
+    background-color: var(--md-sys-color-primary);
+    border-radius: var(--border-radius-full);
+    transition: width 1s linear;
+}
+
+/* --- FIM DA MODIFICAÇÃO (LAYOUT PIX SICREDI) --- */
+
+div#nativa-pending-payment-container {
+    background: var(--md-sys-color-surface-container-low);
+    padding: var(--space-xl);
+    border-radius: var(--border-radius-large);
+}
+
+.manual-pix-details {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.manual-pix-key-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-md);
+    padding: var(--space-lg) 0;
+}
+
+input#manual-pix-key {
+    border-radius: var(--border-radius-smaller);
+    font-family: monospace;
+    text-align: center;
+    font-size: var(--font-size-md);
+    border: 0;
+    max-width: 10rem;
+    background: var(--md-sys-color-on-primary-container);
+}
+
+.order-details-block.is-payment-confirmed {
+    display: flex;
+    flex-direction: column;
+    background: var(--md-sys-color-success-transparent);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-medium);
+    width: fit-content;
+    align-items: center;
+    max-width: 100px;
+}
+
+.current-order-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-left: 10p;
+}
+
+span.material-symbols-rounded.paid-order {
+    color: var(--md-sys-color-success);
+}
+
+.paid-order-info {
+    font-size: var(--font-size-sm);
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    gap: var(--space-xs);
+    text-align: center;
+}
+
+.manual-pix-info {
+    background: var(--md-sys-color-warning-transparent);
+    padding: var(--space-xl);
+    border-radius: var(--border-radius-medium);
+    outline: solid 2px var(--md-sys-color-warning);
+    margin-bottom: var(--space-xl);
+}
+
+.manual-pix-header {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+}
+
+.nativa-info-icon .material-symbols-rounded {
+    font-size: var(--icon-size-xl);
+    color: var(--md-sys-color-warning);
+}

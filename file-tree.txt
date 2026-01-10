@@ -1,0 +1,235 @@
+├── assets
+│   ├── src
+│   │   ├── css
+│   │   │   ├── admin-customers-page.css
+│   │   │   ├── pedidos-dashboard.css
+│   │   │   ├── frontend-style.css
+│   │   │   └── modules
+│   │   │       ├── _app-components.css
+│   │   │       ├── _base.css
+│   │   │       ├── _cardapio-combos.css
+│   │   │       ├── _cart-reward-banner.css
+│   │   │       ├── _cart-sheet.css
+│   │   │       ├── _checkout-page.css
+│   │   │       ├── _combo-wizard-sheet.css
+│   │   │       ├── _conheca-page.css
+│   │   │       ├── _forms.css
+│   │   │       ├── _home-page.css
+│   │   │       ├── _login.css
+│   │   │       ├── _my-account-order.css
+│   │   │       ├── _my-account-payment.css
+│   │   │       ├── _my-account-profile.css
+│   │   │       ├── _navbar.css
+│   │   │       ├── _onboarding-wizard.css
+│   │   │       ├── _offer-sheet.css
+│   │   │       ├── _overrides.css
+│   │   │       ├── _pix-banner.css
+│   │   │       ├── _pix-payment-page.css
+│   │   │       ├── _product-sheet.css
+│   │   │       ├── _reorder-sheet.css
+│   │   │       └── _variables.css
+│   │   └── js
+│   │       ├── admin
+│   │       │   ├── admin-main.js
+│   │       │   └── admin-scripts.js
+│   │       ├── core
+│   │       │   ├── background-tasks.js
+│   │       │   ├── global-interactions.js
+│   │       │   ├── main.js
+│   │       │   ├── main-state.js
+│   │       │   ├── nativa-api-service.js
+│   │       │   ├── push-notifications.js  <-- NOVO
+│   │       │   └── router.js
+│   │       ├── dashboard
+│   │       │   ├── dashboard-api.js
+│   │       │   ├── dashboard-handlers.js
+│   │       │   ├── dashboard-main.js
+│   │       │   ├── dashboard-state.js
+│   │       │   ├── dashboard-ui.js
+│   │       │   └── dashboard-utils.js
+│   │       ├── features
+│   │       │   ├── addons
+│   │       │   │   ├── addons-validation.js
+│   │       │   │   └── addons-logic.js
+│   │       │   ├── address
+│   │       │   │   ├── address-handler.js
+│   │       │   │   └── address-ui.js
+│   │       │   ├── cart
+│   │       │   │   ├── cart-handlers.js
+│   │       │   │   ├── cart-main.js
+│   │       │   │   └── cart-ui.js
+│   │       │   ├── checkout
+│   │       │   │   ├── checkout-handlers.js
+│   │       │   │   ├── checkout-main.js
+│   │       │   │   └── checkout-ui.js
+│   │       │   ├── home
+│   │       │   │   └── home.js
+│   │       │   ├── login
+│   │       │   │   └── login-prompt-handler.js
+│   │       │   ├── menu
+│   │       │   │   ├── combo-wizard-handlers.js
+│   │       │   │   ├── combo-wizard-ui.js
+│   │       │   │   ├── menu-handlers.js
+│   │       │   │   ├── menu-main.js
+│   │       │   │   └── menu-ui.js
+│   │       │   ├── product-sheet
+│   │       │   │   └── product-sheet-logic.js
+│   │       │   ├── my-account
+│   │       │   │   ├── my-account-data-manager.js
+│   │       │   │   ├── my-account-main.js
+│   │       │   │   ├── my-account-order-details-ui.js
+│   │       │   │   ├── my-account-order-handler.js
+│   │       │   │   ├── my-account-order-ui.js
+│   │       │   │   ├── my-account-payment-ui.js
+│   │       │   │   ├── my-account-profile-handler.js
+│   │       │   │   ├── my-account-profile-ui.js
+│   │       │   │   ├── my-account-rewards-ui.js
+│   │       │   │   └── my-account-ui.js
+│   │       │   ├── my-favorites
+│   │       │   │   ├── my-favorites-handler.js
+│   │       │   │   └── my-favorites-ui.js
+│   │       │   ├── onboarding
+│   │       │   │   ├── onboarding-handler.js
+│   │       │   │   └── onboarding-ui.js
+│   │       │   └── pix-payment
+│   │       │       └── nativa-pix-payment-logic.js
+│   │       ├── sw-logic.js
+│   │       └── utils
+│   │           ├── form-validation.js
+│   │           ├── helpers.js
+│   │           ├── modal.js
+│   │           ├── nativa-ui-helpers.js
+│   │           ├── nativa-utils.js
+│   │           └── welcome-sheet.js
+│   ├── dist
+│   │   ├── nativa-delivery.bundle.js
+│   │   ├── sw.js
+│   │   └── manifest.webmanifest
+│   ├── icons
+│   │   ├── android-chrome-192x192.png
+│   │   ├── android-chrome-512x512.png
+│   │   └── maskable_icon.png
+│   ├── sounds
+│   │   └── notification.mp3
+│   └── svg
+│       └── whatsapp.svg
+├── includes
+│   ├── admin
+│   │   ├── acf-fields
+│   │   │   ├── nativa-delivery-adicionais-fields.php
+│   │   │   ├── nativa-delivery-bairro-fields.php
+│   │   │   ├── nativa-delivery-category-fields.php
+│   │   │   ├── nativa-delivery-combo-fields.php
+│   │   │   ├── nativa-delivery-cupom-fields.php
+│   │   │   ├── nativa-delivery-daily-deals-fields.php
+│   │   │   ├── nativa-delivery-loyalty-fields.php
+│   │   │   ├── nativa-delivery-oferta-fields.php
+│   │   │   ├── nativa-delivery-pedido-fields.php
+│   │   │   ├── nativa-delivery-product-fields.php
+│   │   │   └── nativa-delivery-rua-fields.php
+│   │   ├── ajax-handlers
+│   │   │   └── class-nd-csv-importer-ajax-handler.php
+│   │   ├── class-nd-address-settings.php
+│   │   ├── class-nd-admin.php
+│   │   ├── class-nd-cpt-manager.php
+│   │   ├── class-nd-hours-settings.php
+│   │   ├── class-nd-loyalty-settings.php
+│   │   ├── class-nd-payments-settings.php
+│   │   ├── class-nd-settings-page.php
+│   │   ├── class-nd-taxonomy-manager.php
+│   │   ├── class-nd-wait-times-settings.php
+│   │   ├── class-nd-whatsapp-settings.php
+│   │   ├── cpt-definitions
+│   │   │   ├── cpt-adicional-grupo.php
+│   │   │   ├── cpt-bairro.php
+│   │   │   ├── cpt-combo.php
+│   │   │   ├── cpt-cupom.php
+│   │   │   ├── cpt-pedido.php
+│   │   │   ├── cpt-produto.php
+│   │   │   ├── cpt-rua.php
+│   │   │   ├── nativa_entregador.php
+│   │   │   └── nativa_oferta.php
+│   │   ├── cpt-templates
+│   │   ├── helpers
+│   │   │   └── class-nativa-delivery-exporter-helper.php
+│   │   ├── importers
+│   │   │   ├── class-nd-adicional-importer.php
+│   │   │   ├── class-nd-bairro-importer.php
+│   │   │   ├── class-nd-combo-importer.php
+│   │   │   ├── class-nd-coupon-importer.php
+│   │   │   ├── class-nd-loyalty-importer.php
+│   │   │   ├── class-nd-offer-importer.php
+│   │   │   ├── class-nd-product-importer.php
+│   │   │   └── class-nd-rua-importer.php
+│   │   ├── nativa-customers-page-template.php
+│   │   ├── nativa-list-cpt-iframe.php
+│   │   └── nativa-updates-page-template.php
+│   ├── core
+│   │   ├── class-nd-automations.php
+│   │   ├── class-nd-cart-helper.php
+│   │   ├── class-nd-data-provider.php
+│   │   ├── class-nd-hours-helper.php
+│   │   ├── class-nd-offers-helper.php
+│   │   ├── class-nd-order-creator.php
+│   │   ├── class-nd-sicredi-helper.php
+│   │   ├── class-nd-stats-helper.php
+│   │   ├── class-nd-validation-helper.php
+│   │   ├── class-nd-wait-time-helper.php
+│   │   └── class-nd-whatsapp-helper.php
+│   ├── public
+│   │   ├── ajax-handlers
+│   │   │   ├── class-nd-address-ajax-handler.php
+│   │   │   ├── class-nd-ajax-manager.php
+│   │   │   ├── class-nd-cart-ajax-handler.php
+│   │   │   ├── class-nd-coupon-ajax-handler.php
+│   │   │   ├── class-nd-data-ajax-handler.php
+│   │   │   ├── class-nd-favorites-ajax-handler.php
+│   │   │   ├── class-nd-loyalty-ajax-handler.php
+│   │   │   ├── class-nd-order-ajax-handler.php
+│   │   │   ├── class-nd-payment-ajax-handler.php
+│   │   │   └── class-nd-profile-ajax-handler.php
+│   │   ├── class-nd-public.php
+│   │   ├── class-nd-shortcodes.php
+│   │   └── templates
+│   │       ├── nativa-app.php
+│   │       ├── nativa-bottom-navbar.php
+│   │       ├── nativa-bottom-sheets.php
+│   │       ├── nativa-cardapio-page.php
+│   │       ├── nativa-checkout-page.php
+│   │       ├── nativa-cookie-banner.php
+│   │       ├── nativa-pedidos-page.php
+│   │       ├── nativa-home-page.php
+│   │       ├── nativa-legal-privacy.php
+│   │       ├── nativa-legal-terms.php
+│   │       ├── nativa-login-processor-page.php
+│   │       ├── nativa-must-login-page.php
+│   │       ├── nativa-my-account-page.php
+│   │       ├── nativa-my-addresses-page.php
+│   │       └── sheets
+│   │           ├── nativa-address-form-sheet.php
+│   │           ├── nativa-cart-side-sheet.php
+│   │           ├── nativa-combo-wizard-sheet.php
+│   │           ├── nativa-contact-sheet.php
+│   │           ├── nativa-legal-sheet.php
+│   │           ├── nativa-login-prompt-sheet.php
+│   │           ├── nativa-loyalty-rules-sheet.php
+│   │           ├── nativa-modality-sheet.php
+│   │           ├── nativa-offer-sheet.php
+│   │           ├── nativa-onboarding-sheet.php
+│   │           ├── nativa-product-details-sheet.php
+│   │           ├── nativa-reorder-sheet.php
+│   │           ├── nativa-rewards-sheet.php
+│   │           ├── nativa-save-favorite-sheet.php
+│   │           └── nativa-welcome-sheet.php
+│   ├── class-nd-activator.php
+│   ├── class-nd-deactivator.php
+│   └── class-nd-main.php
+├── languages
+├── composer.json
+├── composer.lock
+├── file-tree.txt
+├── nativa-delivery.php
+├── package-lock.json
+├── package.json
+├── vendor/
+├── vite.config.js
