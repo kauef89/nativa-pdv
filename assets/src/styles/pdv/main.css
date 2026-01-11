@@ -1,0 +1,17 @@
+/* assets/src/styles/pdv/main.css */
+
+/* 1. Shared (Correção: ../ em vez de ../../) */
+@import '../_shared/_variables.css';
+@import '../_shared/_base.css';
+@import '../_shared/_forms.css';
+@import '../_shared/_app-components.css';
+
+/* 2. Estrutura do PDV */
+@import 'modules/_layout.css';
+@import 'modules/_navbar.css';
+
+/* 3. Views Específicas */
+@import 'modules/_dashboard.css';
+
+/* 4. Funcionalidades Extras */
+@import 'modules/_print.css';

@@ -1,0 +1,106 @@
+/* assets/src/styles/pdv/modules/_navbar.css */
+
+/* --- SIDEBAR DE NAVEGAÇÃO --- */
+.nativa-pdv-nav {
+    width: 72px; /* Largura fechada (apenas ícones) */
+    background-color: var(--md-sys-color-surface-container-low);
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    overflow-x: hidden; /* Esconde o texto quando fechado */
+    white-space: nowrap;
+    padding: var(--space-sm) 0;
+}
+
+/* Expansão no Hover */
+.nativa-pdv-nav:hover {
+    width: 240px; /* Largura aberta */
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Área do Logo */
+.nav-logo-area {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px; /* Alinha com os ícones */
+    margin-bottom: var(--space-md);
+    color: var(--md-sys-color-primary);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.logo-icon {
+    font-size: 28px !important;
+    margin-right: 12px;
+}
+
+/* Grupos de Navegação */
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 var(--space-xs);
+}
+
+/* Item de Navegação */
+.nav-item {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    background: transparent;
+    border: none;
+    border-radius: var(--border-radius-medium);
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    width: 100%;
+    position: relative;
+}
+
+.nav-item:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+}
+
+.nav-item.active {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+/* Ícone (Sempre visível) */
+.nav-item .material-symbols-rounded {
+    min-width: 72px; /* Mantém a largura fixa para centralizar na barra fechada */
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Texto (Legenda) */
+.nav-label {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Mostra o texto quando o menu expande */
+.nativa-pdv-nav:hover .nav-label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Utilitários do Menu */
+.nav-separator {
+    height: 1px;
+    background-color: var(--md-sys-color-outline-variant);
+    margin: var(--space-md) var(--space-lg);
+    opacity: 0.5;
+}
+
+.nav-spacer {
+    flex: 1; /* Empurra o conteúdo abaixo para o rodapé do menu */
+}

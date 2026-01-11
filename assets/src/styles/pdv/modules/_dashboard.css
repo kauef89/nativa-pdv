@@ -1,0 +1,1023 @@
+/* assets/css/pedidos-dashboard.css */
+/* VERSÃO 3.1: Melhora a responsividade para dispositivos móveis. */
+/* ATUALIZAÇÃO (UX): Adiciona estilos para o botão "Carregar Mais" e otimiza a interface dos botões de filtro. */
+/* ATUALIZAÇÃO (Filtros): Adiciona layout de duas colunas para o painel de filtros. */
+/* CORREÇÃO: Restaura estilos removidos e ajusta botão de filtros. */
+/* ATUALIZAÇÃO (Impressão): Adiciona estilos para botões de impressão, checklist e LAYOUT DE IMPRESSÃO TÉRMICA. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.nativa-pedidos-dashboard {
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--font-family-primary), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden; /* Previne a rolagem da página principal */
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+.order-actions-button.primary-action.is-shaking {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* --- Tela de Login --- */
+.dashboard-login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.dashboard-login-box {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--space-3xl);
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: var(--border-radius-large);
+    text-align: center;
+}
+.dashboard-login-box h2 {
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-sm);
+}
+.dashboard-login-box p {
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-xl);
+}
+.dashboard-login-box input[type='password'] {
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-lg);
+    background-color: var(--md-sys-color-surface-container-lowest);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--border-radius-medium);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-lg);
+}
+.dashboard-login-box button {
+    width: 100%;
+    padding: var(--space-md);
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border: none;
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+}
+.login-error {
+    color: var(--md-sys-color-error);
+    font-weight: var(--font-weight-semibold);
+    margin-top: var(--space-lg);
+}
+
+/* --- Layout Principal e Cabeçalho --- */
+#pedidos-app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.pedidos-header {
+    background-color: var(--md-sys-color-surface-container-lowest);
+    padding: var(--space-md) var(--space-xl);
+    box-shadow: var(--md-sys-elevation-2);
+    z-index: 100;
+}
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: var(--space-xl);
+}
+.header-logo {
+    flex-shrink: 0;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+.header-filters {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    gap: var(--space-lg);
+}
+.search-filter-group {
+    position: relative;
+    flex-grow: 1;
+    max-width: 400px;
+}
+#search-term {
+    background-color: var(--md-sys-color-surface);
+    border: 0;
+    border-radius: var(--border-radius-full);
+    padding: 10px 16px 10px 40px;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    width: 100%;
+}
+.search-filter-group::before {
+    content: 'search';
+    font-family: 'Material Symbols Rounded';
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-sys-color-on-surface-variant);
+    pointer-events: none;
+    font-size: var(--icon-size-md);
+}
+
+.pedidos-main-content {
+    padding: var(--space-xl) var(--space-2xl);
+    flex-grow: 1;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: auto; /* Permite a rolagem apenas do conteúdo principal */
+}
+
+/* --- Botões do Cabeçalho (Auto-Refresh, Notificações) --- */
+.header-button {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-full); /* Ajustado para ser full */
+    padding: var(--space-sm) var(--space-md); /* Ajuste de padding */
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    min-height: 40px; /* Garante altura mínima */
+}
+.header-button.icon-only {
+    padding: 10px; /* Padding igual para botões só com ícone */
+    min-width: 40px; /* Garante largura mínima */
+}
+.header-button:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-color: var(--md-sys-color-outline);
+}
+.header-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--md-sys-color-surface-container-low);
+}
+#auto-refresh-toggle.active,
+#dashboard-push-toggle.active {
+    background-color: var(
+        --md-sys-color-primary
+    ); /* Verde sucesso pode ser confuso */
+    color: var(--md-sys-color-on-primary);
+    border-color: var(--md-sys-color-primary);
+}
+#dashboard-push-toggle.is-denied {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    border-color: var(--md-sys-color-error-container);
+}
+/* ----------------------------------------------------------- */
+
+.dashboard-loader {
+    text-align: center;
+    padding: var(--space-3xl);
+    font-size: var(--font-size-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* --- Tabela de Pedidos --- */
+#pedidos-table-container {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: var(--border-radius-medium);
+    overflow-x: auto;
+}
+.pedidos-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.pedidos-table th,
+.pedidos-table td {
+    padding: var(--space-md) var(--space-lg);
+    text-align: left;
+    border-bottom: 1px solid var(--md-sys-color-surface-container-lowest);
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: var(--font-size-md);
+}
+
+.pedidos-table thead {
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+.pedidos-table th {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+.pedidos-table tbody tr {
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+.pedidos-table tbody tr:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+.pedidos-table tbody tr.is-expanded {
+    background-color: var(--md-sys-color-surface-container-highest);
+}
+.pedidos-table tbody tr.is-pending {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+.pedidos-table tbody tr.is-pending:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-error-container) 80%,
+        #fff 20%
+    );
+}
+.pedidos-table select {
+    width: 150px;
+    padding: var(--space-sm);
+    border-radius: var(--border-radius-small);
+    border: 0;
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    text-align: center;
+}
+
+/* --- Tooltip de Detalhes --- */
+.details-tooltip-row td {
+    padding: 0 !important;
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+.details-tooltip-content {
+    display: flex;
+    gap: var(--space-xl);
+    padding: var(--space-xl);
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+.tooltip-column h4 {
+    font-size: var(--font-size-lg);
+    color: var(--md-sys-color-primary);
+    margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    padding-bottom: var(--space-sm);
+}
+.tooltip-column.is-full-width {
+    grid-column: 1 / -1;
+}
+.tooltip-data-item .label {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
+    display: block;
+    margin-bottom: var(--space-xs);
+}
+.tooltip-data-item .value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface);
+}
+.tooltip-items-list {
+    list-style: none;
+    padding: 0;
+    font-size: var(--font-size-md);
+}
+.tooltip-sublist {
+    list-style: none;
+    padding-left: var(--space-lg);
+    margin-top: var(--space-xs);
+    font-size: 0.9em;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.order-data-grid {
+    display: flex;
+    gap: var(--space-md) var(--space-lg);
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.order-data-grid .tooltip-data-item.is-full-width {
+    grid-column: 1 / -1;
+}
+
+.map-container {
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+    border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.item-tag {
+    display: inline-block;
+    padding: 2px var(--space-sm);
+    border-radius: var(--border-radius-smaller);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    margin-left: var(--space-sm);
+    vertical-align: middle;
+}
+.item-tag.is-reward {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+.item-tag.is-offer {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+/* --- Ações e Filtros --- */
+.status-badge {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--border-radius-full);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+/* Status Color Rules (Copied from previous state, ensure these are present) */
+.status-badge.status-pendente,
+.status-badge.status-aguardando-pagamento {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+.status-badge.status-recebido {
+    background-color: var(--md-sys-color-warning-container);
+    color: var(--md-sys-color-on-warning-container);
+}
+.status-badge.status-aceito {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+.status-badge.status-pronto {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+}
+.status-badge.status-enviado {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+.status-badge.status-finalizado {
+    background-color: var(--md-sys-color-success-transparent);
+    color: var(--md-sys-color-on-surface-variant);
+}
+.status-badge.status-cancelado {
+    background-color: var(--md-sys-color-error-transparent);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.order-actions-button {
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    padding: var(--button-padding-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+.order-actions-button:hover {
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-color: var(--md-sys-color-outline);
+}
+.order-actions-button.primary-action {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-color: var(--md-sys-color-primary);
+}
+.order-actions-button.primary-action:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-primary) 90%,
+        black 10%
+    );
+}
+.order-actions-button.cancel-action {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+    border-color: var(--md-sys-color-error-container);
+}
+.order-actions-button.cancel-action:hover {
+    background-color: color-mix(
+        in srgb,
+        var(--md-sys-color-error-container) 90%,
+        black 10%
+    );
+}
+.order-actions-button.active {
+    /* Para botões como Notificar/Estornar */
+    background-color: var(--md-sys-color-success-container);
+    color: var(--md-sys-color-on-success-container);
+    border-color: var(--md-sys-color-success-container);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO: Estilos do toggle button RESTAURADOS --- */
+.nativa-toggle-button-group {
+    display: inline-flex;
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+    background-color: var(
+        --md-sys-color-surface-container-low
+    ); /* Fundo para o grupo */
+    border: 1px solid var(--md-sys-color-outline-variant); /* Borda sutil */
+}
+.nativa-toggle-button {
+    background-color: transparent; /* Botões transparentes */
+    color: var(--md-sys-color-on-surface-variant);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-md);
+    border-right: 1px solid var(--md-sys-color-outline-variant); /* Separador */
+}
+.nativa-toggle-button:last-child {
+    border-right: none; /* Remove separador do último */
+}
+.nativa-toggle-button.is-active {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    font-weight: var(--font-weight-bold);
+}
+.nativa-toggle-button:hover:not(.is-active) {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+/* --- FIM DA MODIFICAÇÃO --- */
+
+/* --- Layout Responsivo --- */
+@media screen and (max-width: 960px) {
+    .pedidos-main-content {
+        padding: var(--space-lg);
+    }
+    .header-content {
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+    .header-filters {
+        flex-direction: column;
+        width: 100%;
+        gap: var(--space-md);
+        align-items: stretch; /* Faz os filtros ocuparem a largura total */
+    }
+    .filter-group,
+    .search-filter-group {
+        width: 100%;
+        max-width: none;
+    }
+
+    /* --- INÍCIO DA MODIFICAÇÃO: Ajuste responsivo para toggle button --- */
+    .nativa-toggle-button-group {
+        justify-content: center; /* Centraliza botões */
+        width: 100%;
+        display: flex; /* Garante que funcione */
+    }
+    .nativa-toggle-button {
+        flex-grow: 1; /* Faz botões ocuparem espaço igual */
+        text-align: center;
+    }
+    /* --- FIM DA MODIFICAÇÃO --- */
+
+    .pedidos-table thead {
+        display: none; /* Esconde o cabeçalho da tabela */
+    }
+
+    .pedidos-table tr {
+        display: block;
+        margin-bottom: var(--space-lg);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        border-radius: var(--border-radius-medium);
+        padding: var(--space-md);
+    }
+
+    .pedidos-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        border-bottom: 1px solid var(--md-sys-color-surface-container-low);
+        padding: var(--space-sm) 0;
+        white-space: normal;
+    }
+
+    .pedidos-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .pedidos-table td::before {
+        content: attr(data-label);
+        font-weight: var(--font-weight-bold);
+        text-align: left;
+        margin-right: var(--space-lg);
+        color: var(--md-sys-color-on-surface-variant);
+    }
+
+    /* Ajusta a célula do status para melhor visualização */
+    .pedidos-table td[data-label='Status'] .order-status-cell {
+        width: 100%;
+    }
+    .pedidos-table select.status-select,
+    .pedidos-table select.entregador-select {
+        width: 100%;
+        max-width: 180px; /* Limita a largura para não ficar excessivo */
+    }
+
+    .details-tooltip-content {
+        flex-direction: column;
+    }
+
+    .tooltip-column {
+        width: 100%;
+    }
+
+    /* Ajusta botões do header para mobile */
+    .header-button .button-text {
+        display: none; /* Esconde texto em mobile */
+    }
+    .header-button {
+        padding: 10px;
+        min-width: 44px; /* Tamanho mínimo de toque */
+        justify-content: center;
+    }
+    .status-filter-dropdown-button .button-text {
+        display: none; /* Esconde texto do botão de filtro em mobile */
+    }
+    .status-filter-dropdown-panel {
+        width: calc(100vw - 32px); /* Largura quase total em mobile */
+        right: 16px; /* Ajusta posição */
+        left: 16px;
+    }
+    .status-filter-columns {
+        flex-direction: column; /* Colunas empilhadas */
+    }
+}
+
+.tooltip-column {
+    flex: 1;
+    min-width: 200px; /* Garante largura mínima para colunas */
+}
+
+/* Estilos para o Dropdown de Filtro de Status */
+#status-filter-container {
+    position: relative;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+/* Adiciona estilos para o botão do dropdown */
+.status-filter-dropdown-button {
+    background-color: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant); /* Adiciona borda */
+    padding: 10px 16px; /* Padding ajustado */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-md);
+    border-radius: var(--border-radius-full);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 40px; /* Garante altura mínima */
+}
+.status-filter-dropdown-button:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-outline);
+}
+.status-filter-dropdown-button[aria-expanded='true'] {
+    background-color: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-outline);
+}
+
+.status-filter-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 100;
+    background-color: var(--md-sys-color-surface-container);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--md-sys-elevation-2);
+    padding: var(--space-xl);
+    width: 450px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0s 0.2s;
+}
+
+.status-filter-dropdown-panel.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0s 0s;
+    left: 50%;
+}
+
+.status-filter-columns {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.status-filter-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.status-filter-column h5 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.status-filter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: var(--space-md);
+}
+
+.status-filter-item .status-filter-item-label {
+    flex-grow: 1;
+    text-align: left;
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer; /* Permite clicar no label para marcar */
+}
+
+/* Estilos para o Toggle Switch (substituindo o checkbox) */
+.nativa-toggle-switch {
+    display: inline-block;
+    position: relative;
+    flex-shrink: 0; /* Impede que o toggle encolha */
+}
+.nativa-toggle-control input[type='checkbox'] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+.nativa-toggle-ui {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    width: 52px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    /* border: 2px solid var(--md-sys-color-outline); */
+    transition: all 0.2s ease-in-out;
+}
+.nativa-toggle-ui::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 6px; /* Posição inicial do círculo */
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-outline);
+    transform: translateY(-50%);
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+}
+/* Estado Marcado */
+.nativa-toggle-control input[type='checkbox']:checked + .nativa-toggle-ui {
+    background-color: var(--md-sys-color-primary);
+    border-color: var(--md-sys-color-primary);
+}
+.nativa-toggle-control
+    input[type='checkbox']:checked
+    + .nativa-toggle-ui::before {
+    background-color: var(--md-sys-color-on-primary);
+    transform: translate(24px, -50%); /* Move o círculo para a direita */
+    width: 24px; /* Aumenta o círculo quando ativo */
+    height: 24px;
+    left: 2px; /* Ajusta posição inicial para o tamanho maior */
+}
+/* Tamanho Pequeno */
+.nativa-toggle-switch.is-small .nativa-toggle-ui {
+    width: 40px;
+    height: 24px;
+    border-radius: 12px;
+}
+.nativa-toggle-switch.is-small .nativa-toggle-ui::before {
+    width: 12px; /* Círculo menor */
+    height: 12px;
+    left: 4px; /* Posição inicial ajustada */
+}
+.nativa-toggle-switch.is-small
+    .nativa-toggle-control
+    input[type='checkbox']:checked
+    + .nativa-toggle-ui::before {
+    transform: translate(18px, -50%); /* Movimento menor */
+    width: 16px; /* Círculo ativo menor */
+    height: 16px;
+    left: 2px; /* Ajusta posição inicial */
+}
+
+/* --- Pagamento e Ações --- */
+span.payment-status-tag {
+    display: inline-block;
+    padding: 2px var(--space-sm);
+    border-radius: var(--border-radius-smaller);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    margin-top: var(--space-xs); /* Adiciona espaço acima */
+}
+span.payment-status-tag.is-refunded {
+    background-color: var(--md-sys-color-warning-container);
+    color: var(--md-sys-color-on-warning-container);
+}
+span.payment-status-tag.is-received {
+    /* Escondido por padrão, mostrado apenas em alguns contextos se necessário */
+    display: none;
+    background-color: var(--md-sys-color-success-container);
+    color: var(--md-sys-color-on-success-container);
+}
+
+.actions-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+td.order-item-price-cell {
+    vertical-align: top;
+    font-weight: var(--font-weight-bold);
+    text-align: right;
+}
+
+/* --- Botão Carregar Mais --- */
+#load-more-container {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-xl) 0;
+}
+
+/* --- Copiar ID --- */
+.order-id-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    /* margin-bottom: var(--space-lg); */ /* Removido para alinhar melhor */
+}
+
+.copy-order-id-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface-variant);
+    padding: 4px;
+    border-radius: 50%;
+    display: flex; /* Para centralizar ícone */
+    align-items: center;
+    justify-content: center;
+}
+.copy-order-id-btn:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+.copy-order-id-btn .material-symbols-rounded {
+    font-size: var(--icon-size-sm); /* Ícone menor */
+}
+
+/* --- Mensagem de Nenhum Pedido --- */
+.no-orders-message {
+    width: 100%; /* Ocupa toda a largura */
+    /* position: relative; */ /* Removido */
+    /* left: 25%; */ /* Removido */
+    padding: var(--space-3xl);
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant); /* Cor mais suave */
+}
+
+.no-orders-message span.material-symbols-rounded {
+    font-size: var(--icon-size-2xl);
+    color: var(--md-sys-color-outline-variant);
+    margin-bottom: var(--space-md); /* Espaço abaixo do ícone */
+    display: block; /* Garante que o ícone fique em linha própria */
+}
+
+/* Corrige bug visual do toggle switch */
+label.nativa-toggle-ui::after {
+    display: none;
+}
+
+/* Tooltip Unit Price */
+.tooltip-unit-price {
+    font-size: var(--font-size-xs);
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: var(--font-weight-regular);
+}
+
+.scheduled-order-icon {
+    font-size: var(--icon-size-sm);
+    vertical-align: middle;
+    margin-left: var(--space-xs);
+    color: var(--md-sys-color-secondary);
+}
+
+/* Ajuste fino para o padding do header em telas menores */
+@media screen and (max-width: 600px) {
+    .pedidos-header {
+        padding: var(--space-sm) var(--space-lg);
+    }
+    .pedidos-main-content {
+        padding: var(--space-md);
+    }
+}
+
+.map-placeholder {
+    display: flex;
+    flex-direction: column;
+    background: red;
+    padding: 20px;
+}
+
+table.tooltip-items-table {
+    width: 100%;
+}
+
+span.material-symbols-rounded.modality-icon-tooltip {
+    font-size: 16px;
+    position: relative;
+    top: 3px;
+    color: var(--md-sys-color-outline);
+}
+
+.modality-icon-wrapper .material-symbols-rounded {
+    font-size: 13px;
+    background: var(--md-sys-color-surface-container-highest);
+    padding: 4px;
+    border-radius: 999px;
+    margin-left: 4px;
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO (BUGS 2 e 3) --- */
+/*
+* Correção de Spinner (Bugs 2 e 3)
+* Estilos para botões de ação do tooltip no dashboard.
+*/
+
+.order-actions-button {
+    /* Garante que o spinner absoluto fique contido */
+    position: relative;
+
+    /* Mantém o texto e o ícone no lugar quando o spinner aparecer */
+    /* (A altura do botão é preservada) */
+    transition: color 0.1s ease-in-out;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: fit-content;
+}
+
+/* O spinner (pseudo-elemento ::after) */
+.order-actions-button::after {
+    content: '';
+    display: block;
+    width: 1.2em; /* Tamanho do spinner (pequeno) */
+    height: 1.2em; /* Tamanho do spinner (pequeno) */
+
+    /* Cor do spinner (pode usar currentColor ou uma cor específica) */
+    border: 2px solid var(--md-sys-color-primary);
+    border-right-color: transparent;
+    border-radius: 50%;
+
+    /* Centraliza o spinner no botão */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.6em; /* Metade da altura */
+    margin-left: -0.6em; /* Metade da largura */
+
+    /* Escondido por padrão */
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+        opacity 0.15s ease-in-out,
+        transform 0.15s ease-in-out;
+
+    /* Animação de rotação (presume que 'nativa-spinner-spin' já existe, senão precisa definir) */
+    animation: nativa-spinner-spin 0.6s linear infinite;
+}
+
+/* Animação do spinner (necessária se 'nativa-spinner-spin' não estiver definida globalmente) */
+@keyframes nativa-spinner-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estado de Carregamento (.is-loading) */
+.order-actions-button.is-loading {
+    /* Esconde o texto e o ícone originais tornando-os transparentes */
+    /* Usar 'color' preserva o espaço ocupado pelo texto, mantendo a altura do botão */
+    color: transparent !important;
+    pointer-events: none; /* Impede cliques repetidos */
+}
+
+.order-actions-button.is-loading::after {
+    /* Mostra o spinner */
+    opacity: 1;
+    transform: scale(1);
+}
+/* --- FIM DA MODIFICAÇÃO --- */
+
+.order-actions-button .material-symbols-rounded {
+    font-size: var(--icon-size-sm);
+}
+
+/* --- INÍCIO DA MODIFICAÇÃO (Impressão) --- */
+
+/* Estilos para Botões de Impressão */
+.order-actions-button[data-action^='print-'] {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    border-color: var(--md-sys-color-outline-variant);
+}
+
+.order-actions-button[data-action^='print-']:hover {
+    background-color: var(--md-sys-color-secondary); /* Um pouco mais escuro */
+    color: var(--md-sys-color-on-secondary);
+}
+
+/* Estilos para Checklist do Modal de Impressão */
+.kitchen-print-checklist {
+    /* Complementa os estilos inline */
+    scrollbar-width: thin;
+    scrollbar-color: var(--md-sys-color-outline)
+        var(--md-sys-color-surface-container-low);
+}
+
+.kitchen-print-checklist::-webkit-scrollbar {
+    width: 6px;
+}
+
+.kitchen-print-checklist::-webkit-scrollbar-thumb {
+    background-color: var(--md-sys-color-outline);
+    border-radius: 3px;
+}
+
+.kitchen-print-checklist label:hover {
+    background-color: rgba(
+        var(--md-sys-color-primary-rgb),
+        0.05
+    ) !important; /* Efeito hover */
+}

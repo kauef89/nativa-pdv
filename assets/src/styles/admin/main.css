@@ -1,0 +1,8 @@
+/* assets/src/styles/admin/main.css */
+
+/* Se quiser usar algumas variáveis, ok, mas cuidado com conflitos no Admin */
+/* @import '../../_shared/_variables.css'; */
+
+/* Módulos do Admin */
+@import 'modules/_importer.css'; /* Antigo admin-style.css */
+@import 'modules/_customers.css'; /* Antigo admin-customers-page.css */

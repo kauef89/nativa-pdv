@@ -1,0 +1,34 @@
+/* assets/src/styles/consumer/main.css */
+
+/* 1. Shared (Base do Design System) */
+@import '../_shared/_variables.css';
+@import '../_shared/_base.css';
+@import '../_shared/_forms.css';
+@import '../_shared/_app-components.css';
+
+/* 2. Módulos Específicos do Consumer */
+@import 'modules/_navbar.css';
+@import 'modules/_home-page.css';
+@import 'modules/_cardapio-combos.css';
+@import 'modules/_product-sheet.css';
+@import 'modules/_offer-sheet.css';
+@import 'modules/_cart-sheet.css';
+@import 'modules/_cart-reward-banner.css';
+@import 'modules/_combo-wizard-sheet.css';
+@import 'modules/_reorder-sheet.css';
+@import 'modules/_checkout-page.css';
+@import 'modules/_login.css';
+@import 'modules/_cookie-banner.css';
+@import 'modules/_pix-payment-page.css';
+@import 'modules/_pix-banner.css';
+@import 'modules/_address-wizard.css';
+@import 'modules/_onboarding-wizard.css';
+@import 'modules/_conheca-page.css';
+@import 'modules/_legal-text.css';
+@import 'modules/_overrides.css';
+
+/* Minha Conta (Sub-módulos) */
+@import 'modules/_my-account-profile.css';
+@import 'modules/_my-account-order.css';
+@import 'modules/_my-account-payment.css';
+@import 'modules/_my-account-rewards.css';

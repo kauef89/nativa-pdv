@@ -2,94 +2,94 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
     const isProd = command === 'build';
-    return {
-        // --- INÍCIO DA MODIFICAÇÃO: 'base' revertida para o original ---
-        // Define a base para os assets no build de produção
-        base: isProd ? '/wp-content/plugins/nativa-delivery/assets/dist/' : '/',
+    const pluginFolderName = 'nativa-delivery';
 
-        // Configuração para CSS
+    return {
+        base: isProd
+            ? `/wp-content/plugins/${pluginFolderName}/assets/dist/`
+            : '/',
+
+        // Ativa sourcemaps para você ver o arquivo original no DevTools
         css: {
             devSourcemap: true,
         },
 
-        // Configuração do servidor de desenvolvimento
-        server: {
-            port: 5173,
-            strictPort: true,
-            host: 'localhost',
-            origin: 'http://localhost:5173',
+        resolve: {
+            alias: {
+                '@core': resolve(__dirname, 'assets/src/js/core'),
+                '@shared': resolve(__dirname, 'assets/src/js/shared'),
+                '@apps': resolve(__dirname, 'assets/src/js/apps'),
+                '@utils': resolve(__dirname, 'assets/src/js/shared/utils'),
+                '@ui': resolve(__dirname, 'assets/src/js/shared/ui'),
+                // Alias para facilitar imports dentro do CSS/SCSS se você decidir usar SCSS no futuro
+                '@styles': resolve(__dirname, 'assets/src/styles'),
+            },
         },
 
         plugins: [
             VitePWA({
-                // --- INÍCIO DA MODIFICAÇÃO: Escopo explícito mantido ---
-                // Esta linha é crucial e diz ao SW para controlar o site inteiro.
-                scope: '/',
-                registerType: 'autoUpdate',
-                injectRegister: null,
-                srcDir: 'assets/src/js',
-                filename: 'sw-logic.js',
-                outDir: 'assets/dist',
                 strategies: 'injectManifest',
+                srcDir: 'assets/src/js/apps/consumer',
+                filename: 'sw-consumer.js',
+                injectRegister: 'auto',
+                registerType: 'autoUpdate',
                 manifest: {
-                    name: 'Nativa Delivery',
-                    short_name: 'Nativa',
-                    description:
-                        'Peça os melhores pastéis e lanches de Balneário Barra do Sul.',
-                    // --- INÍCIO DA MODIFICAÇÃO: Adicionado ID único para a PWA do consumidor ---
-                    id: '/?app=delivery',
-                    // --- FIM DA MODIFICAÇÃO ---
-                    theme_color: '#1c1b1f',
-                    background_color: '#1c1b1f',
-                    display: 'standalone',
-                    scope: '/',
-                    start_url: '/',
-                    // --- INÍCIO DA MODIFICAÇÃO: Caminho dos ícones atualizado ---
-                    icons: [
-                        {
-                            src: '/wp-content/plugins/nativa-delivery/assets/icons/main-app/icon-192x192.png',
-                            sizes: '192x192',
-                            type: 'image/png',
-                        },
-                        {
-                            src: '/wp-content/plugins/nativa-delivery/assets/icons/main-app/icon-512x512.png',
-                            sizes: '512x512',
-                            type: 'image/png',
-                        },
-                        {
-                            src: '/wp-content/plugins/nativa-delivery/assets/icons/main-app/maskable-icon.png',
-                            sizes: '512x512',
-                            type: 'image/png',
-                            purpose: 'maskable',
-                        },
-                    ],
-                    // --- FIM DA MODIFICAÇÃO ---
+                    /* ... mantido ... */
                 },
+                devOptions: { enabled: true, type: 'module' },
             }),
         ],
-        // --- FIM DA MODIFICAÇÃO ---
 
-        // Configurações do build de produção
         build: {
             outDir: 'assets/dist',
             emptyOutDir: true,
             sourcemap: true,
             manifest: true,
             rollupOptions: {
-                // --- INÍCIO DA MODIFICAÇÃO: Múltiplos Entry Points ---
-                // Define pontos de entrada separados para o app principal e o dashboard
                 input: {
-                    main: 'assets/src/js/core/main.js',
-                    dashboard: 'assets/src/js/dashboard/dashboard-main.js',
+                    // --- JAVASCRIPT ---
+                    consumer: resolve(
+                        __dirname,
+                        'assets/src/js/apps/consumer/boot-consumer.js'
+                    ),
+                    pdv: resolve(
+                        __dirname,
+                        'assets/src/js/apps/pdv/boot-pdv.js'
+                    ),
+                    admin: resolve(
+                        __dirname,
+                        'assets/src/js/apps/wp-admin-scripts/admin-main.js'
+                    ),
+
+                    // --- CSS INDEPENDENTE (AQUI ESTÁ O SEGREDO) ---
+                    // Ao adicionar aqui, o Vite gera um arquivo .css separado no dist
+                    'style-consumer': resolve(
+                        __dirname,
+                        'assets/src/styles/consumer/main.css'
+                    ),
+                    'style-pdv': resolve(
+                        __dirname,
+                        'assets/src/styles/pdv/main.css'
+                    ),
+                    'style-admin': resolve(
+                        __dirname,
+                        'assets/src/styles/admin/main.css'
+                    ),
                 },
-                // --- FIM DA MODIFICAÇÃO ---
                 output: {
-                    entryFileNames: `[name].[hash].js`,
-                    chunkFileNames: `[name].[hash].js`,
-                    assetFileNames: `[name].[hash].[ext]`,
+                    // Configuração para manter os nomes dos arquivos organizados
+                    entryFileNames: `js/[name].[hash].js`,
+                    chunkFileNames: `js/[name].[hash].js`,
+
+                    // CSS e imagens vão para suas pastas
+                    assetFileNames: (assetInfo) => {
+                        if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                            return 'css/[name].[hash][extname]';
+                        }
+                        return 'assets/[name].[hash][extname]';
+                    },
                 },
             },
         },

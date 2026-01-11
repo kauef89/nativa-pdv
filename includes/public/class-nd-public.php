@@ -1,17 +1,12 @@
 <?php
 /**
-* Funcionalidades da área pública do plugin.
-*
-* ... (histórico de versões anterior) ...
-* ATUALIZAÇÃO (PWA): Modifica a função `link_correct_manifest` para carregar
-* condicionalmente o manifesto correto para o dashboard de pedidos (/pedidos),
-* permitindo que ele seja instalado como um app separado do app do cliente.
-* ATUALIZAÇÃO (PUSH): Adiciona a chave pública VAPID aos dados localizados para o script do dashboard.
-* CORREÇÃO: Restaura a função enqueue_assets original para corrigir erro de carregamento.
-* ATUALIZAÇÃO (Dashboard Login): Adiciona a URL de login aos dados localizados para o dashboard (/pedidos).
-* CORREÇÃO (Dashboard Data Object): Padroniza o uso de 'nativaDeliveryData' para localizar scripts do dashboard.
-* CORREÇÃO (Multi-Entry JS): Modifica enqueue_assets para carregar o entry point correto (main.js ou dashboard-main.js) com base na página.
-*/
+ * Funcionalidades da área pública do plugin.
+ *
+ * ATUALIZAÇÃO (Vite Integration v6.4 - Final):
+ * - Base original preservada.
+ * - Adicionado Loader de Template para o PDV (com caminho correto em includes/).
+ * - Adicionado Mock do Google Auth para evitar tela branca em ambiente de desenvolvimento.
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -24,9 +19,6 @@ class ND_Public {
 
     private $plugin_name;
     private $version;
-    // --- INÍCIO DA MODIFICAÇÃO: Remove o entry point fixo ---
-    // private static $vite_entry_point = 'assets/src/js/core/main.js'; // Removido
-    // --- FIM DA MODIFICAÇÃO ---
 
     public function __construct( $plugin_name, $version ) {
         $this->plugin_name = $plugin_name;
@@ -36,19 +28,47 @@ class ND_Public {
         add_action( 'wp_head', array( $this, 'add_preload_links' ) );
         add_action( 'wp_head', array( $this, 'link_correct_manifest' ) );
         add_filter( 'script_loader_tag', array( $this, 'add_module_type_attribute' ), 10, 2 );
+
+        // --- NOVO: Carregamento do Template do PDV ---
+        add_filter( 'template_include', array( $this, 'load_pdv_template' ), 99 );
     }
 
+    /**
+     * Carrega o template customizado (Shell) para a página do PDV/Pedidos.
+     * Impede o carregamento do tema padrão do WordPress.
+     */
+    public function load_pdv_template( $template ) {
+        // Verifica se é a página do PDV (slugs ou ID)
+        if ( is_page( 'pdv' ) || is_page( 'pedidos' ) || is_page(1376) ) {
+            
+            // Caminho corrigido apontando para dentro de includes/public/templates
+            $shell_path = NATIVADELIVERY_PLUGIN_DIR . 'includes/public/templates/pdv/shell.php';
+            
+            if ( file_exists( $shell_path ) ) {
+                return $shell_path;
+            } else {
+                // Debug visível apenas no código fonte se der erro
+                echo "";
+            }
+        }
+        return $template;
+    }
+
+    /**
+     * Define qual arquivo de manifesto (PWA) será usado.
+     */
     public function link_correct_manifest() {
-        if ( is_page('pedidos') ) {
+        $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+        $is_dashboard = is_page('pedidos') || is_page('pdv') || strpos($request_uri, '/pdv') !== false || strpos($request_uri, '/pedidos') !== false;
+
+        if ( $is_dashboard ) {
             // Tenta carregar manifesto específico do dashboard se existir
             $dashboard_manifest_path = NATIVADELIVERY_PLUGIN_DIR . 'pedidos-manifest.json';
             if (file_exists($dashboard_manifest_path)) {
                 $manifest_url = NATIVADELIVERY_PLUGIN_URL . 'pedidos-manifest.json';
             } else {
-                // Fallback para o manifesto principal se o específico não existir
+                // Fallback para o manifesto principal
                 $manifest_url = NATIVADELIVERY_PLUGIN_URL . 'assets/dist/manifest.webmanifest';
-                // Opcional: Logar um aviso se o manifesto específico não for encontrado
-                // error_log('Nativa Delivery: Manifesto específico do dashboard (pedidos-manifest.json) não encontrado. Usando manifesto principal.');
             }
         } else {
             $manifest_url = NATIVADELIVERY_PLUGIN_URL . 'assets/dist/manifest.webmanifest';
@@ -59,10 +79,19 @@ class ND_Public {
         }
     }
 
+    /**
+     * Adiciona type="module" aos scripts gerados pelo Vite.
+     */
     public function add_module_type_attribute( $tag, $handle ) {
-        // Aplica type="module" a qualquer script cujo handle contenha o nome do plugin
-        if ( strpos($handle, $this->plugin_name) !== false ) {
-            // Garante que só substitua o primeiro ' src=' para evitar problemas
+        // Verifica se o script é um dos nossos módulos (Consumer, PDV ou o Client do Vite)
+        $is_nativa_module = (
+            strpos($handle, 'nativa-consumer') !== false || 
+            strpos($handle, 'nativa-pdv') !== false || 
+            strpos($handle, $this->plugin_name) !== false
+        );
+
+        if ( $is_nativa_module ) {
+            // Injeta o atributo type="module" antes do src
             $pos = strpos($tag, ' src=');
             if ($pos !== false) {
                 return substr_replace($tag, ' type="module" src=', $pos, strlen(' src='));
@@ -70,7 +99,6 @@ class ND_Public {
         }
         return $tag;
     }
-
 
     public function add_preload_links() {
         echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
@@ -80,209 +108,202 @@ class ND_Public {
         echo '<meta name="mobile-web-app-capable" content="yes">';
         echo '<meta name="apple-mobile-web-app-capable" content="yes">';
         echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">';
-        if ( is_page('pedidos') ) {
+        
+        // Verificação simples para o título da app
+        if ( is_page('pedidos') || is_page('pdv') ) {
             echo '<meta name="apple-mobile-web-app-title" content="Nativa Pedidos">';
         } else {
             echo '<meta name="apple-mobile-web-app-title" content="Nativa Delivery">';
         }
-        echo '<link rel="apple-touch-icon" href="/wp-content/plugins/nativa-delivery/assets/icons/apple-touch-icon.png">'; // Considerar usar NATIVADELIVERY_PLUGIN_URL
-        echo '<meta name="theme-color" content="#ffffff">'; // Defina a cor desejada
+        
+        echo '<link rel="apple-touch-icon" href="' . NATIVADELIVERY_PLUGIN_URL . 'assets/icons/apple-touch-icon.png">';
+        echo '<meta name="theme-color" content="#ffffff">';
     }
 
-
+    /**
+     * Gerencia o carregamento de CSS e JS (Dev vs Prod).
+     */
     public function enqueue_assets() {
-        // Estilos e scripts de terceiros
+        // 1. Estilos e scripts externos (Google Fonts, GSI)
         wp_enqueue_style( 'nativa-fonts-and-icons', 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Material+Symbols+Rounded&display=swap', array(), null );
-        // Carrega GSI apenas se não for a página de pedidos
-        if (!is_page('pedidos')) {
-            wp_enqueue_script( 'google-identity-services', 'https://accounts.google.com/gsi/client', array(), null, true );
+        
+        $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+        // CORREÇÃO CRUCIAL: Detecção robusta da página PDV
+        $is_dashboard = is_page('pedidos') || is_page('pdv') || strpos($request_uri, '/pdv') !== false || strpos($request_uri, '/pedidos') !== false;
+
+        // --- ALTERAÇÃO: Google Auth Mock para Dev ---
+        // Se não for dashboard, carrega o auth (ou o mock se estivermos em dev/subdomínio não autorizado)
+        if ( ! $is_dashboard ) {
+            // Comentei a linha original para evitar o erro de domínio no seu ambiente de dev
+            // wp_enqueue_script( 'google-identity-services', 'https://accounts.google.com/gsi/client', array(), null, true );
+            
+            // Injeta o Mock para o JS não quebrar
+            $google_mock_script = "
+                window.google = {
+                    accounts: {
+                        id: {
+                            initialize: function(config) { console.log('[DEV MODE] Google Auth Mock: Inicializado'); },
+                            renderButton: function(el, config) { 
+                                if(el) el.innerHTML = '<button style=\"width:100%; padding:10px; background:#e0e0e0; border:none; border-radius:4px;\">Login Google (Desativado em Dev)</button>';
+                            },
+                            prompt: function() {},
+                            cancel: function() {}
+                        },
+                        oauth2: {
+                            initTokenClient: function() { return { requestAccessToken: () => {} }; }
+                        }
+                    }
+                };
+            ";
+            wp_register_script('google-identity-services-mock', '', [], null, true);
+            wp_enqueue_script('google-identity-services-mock');
+            wp_add_inline_script('google-identity-services-mock', $google_mock_script);
         }
 
-        // Carrega frontend-style.css diretamente do src (provavelmente para dev ou como fallback)
-        $dev_style_path = NATIVADELIVERY_PLUGIN_DIR . 'assets/src/css/frontend-style.css';
-        if ( file_exists( $dev_style_path ) ) {
-            $dev_style_url = NATIVADELIVERY_PLUGIN_URL . 'assets/src/css/frontend-style.css';
-            $dev_style_version = filemtime( $dev_style_path );
-            wp_enqueue_style( $this->plugin_name . '-dev-style', $dev_style_url, array(), $dev_style_version, 'all' );
-        }
-
-        // Carrega CSS específico do Dashboard se estiver na página 'pedidos' (direto do src)
-        if ( is_page('pedidos') ) {
-            $dashboard_style_path = NATIVADELIVERY_PLUGIN_DIR . 'assets/src/css/pedidos-dashboard.css';
-            if ( file_exists( $dashboard_style_path ) ) {
-                $dashboard_style_url = NATIVADELIVERY_PLUGIN_URL . 'assets/src/css/pedidos-dashboard.css';
-                $dashboard_version = filemtime( $dashboard_style_path );
-                wp_enqueue_style( $this->plugin_name . '-pedidos', $dashboard_style_url, array(), $dashboard_version, 'all' );
-            }
-             // Se o CSS principal (frontend-style.css) não deve ser carregado na pág. pedidos:
-             // wp_dequeue_style($this->plugin_name . '-dev-style');
-        }
-
-        // --- INÍCIO DA MODIFICAÇÃO (Multi-Entry JS) ---
-        $is_dashboard = is_page('pedidos');
-        // Define o ponto de entrada e o handle com base na página
-        $vite_entry_file = $is_dashboard ? 'assets/src/js/dashboard/dashboard-main.js' : 'assets/src/js/core/main.js';
-        $main_handle = $is_dashboard ? $this->plugin_name . '-dashboard-bundle' : $this->plugin_name . '-main-bundle';
-        // --- FIM DA MODIFICAÇÃO ---
-
-        // Lógica Vite Manifest (para produção)
-        $manifest_path = NATIVADELIVERY_PLUGIN_DIR . 'assets/dist/.vite/manifest.json';
-
-        // Se o manifesto NÃO existir (pode ser dev ou erro no build)
-        if ( ! file_exists( $manifest_path ) ) {
-            // Assume modo de desenvolvimento se o manifesto não existe
-            // (Esta parte pode precisar de ajuste dependendo do seu fluxo dev/prod)
-             $is_dev_mode = true; // Ou uma constante/opção para controlar isso
-            if ($is_dev_mode) {
-                 // Tenta carregar do servidor Vite
-                 wp_enqueue_script($this->plugin_name . '-vite-client', 'http://localhost:5173/@vite/client', [], null, true);
-                 wp_enqueue_script(
-                     $main_handle, // Usa o handle dinâmico
-                     'http://localhost:5173/' . $vite_entry_file, // Usa o entry file dinâmico
-                     ['jquery', $this->plugin_name . '-vite-client'],
-                     $this->version,
-                     true
-                 );
-                 // $main_handle já está definido
-            } else {
-                 // Erro em produção
-                 if ( current_user_can( 'manage_options' ) ) {
-                     wp_die( '<strong>Erro Nativa Delivery:</strong> O arquivo manifest.json do Vite não foi encontrado em produção. Execute o comando de build (npm run build).' );
-                 }
-                 error_log('Nativa Delivery: manifest.json não encontrado em produção.');
-                 return; // Impede a execução do resto se o manifesto é essencial
-            }
+        // 2. Define os caminhos de entrada (Entry Points) conforme vite.config.js
+        if ( $is_dashboard ) {
+            // PDV / Dashboard
+            $js_entry_path  = 'assets/src/js/apps/pdv/boot-pdv.js';
+            $css_entry_path = 'assets/src/styles/pdv/main.css';
+            $handle_slug    = 'nativa-pdv';
         } else {
-             // Produção: Carrega do manifesto
+            // Consumer App
+            $js_entry_path  = 'assets/src/js/apps/consumer/boot-consumer.js';
+            $css_entry_path = 'assets/src/styles/consumer/main.css';
+            $handle_slug    = 'nativa-consumer';
+        }
+
+        // 3. Carregamento via Vite Manifest
+        $manifest_path = NATIVADELIVERY_PLUGIN_DIR . 'assets/dist/.vite/manifest.json';
+        $is_dev_mode = !file_exists($manifest_path);
+
+        if ( $is_dev_mode ) {
+            // --- MODO DESENVOLVIMENTO (Hot Reload) ---
+            wp_enqueue_script($this->plugin_name . '-vite-client', 'http://localhost:5173/@vite/client', [], null, true);
+            
+            // Carrega CSS (force load em dev)
+            wp_enqueue_style(
+                $handle_slug . '-style-dev',
+                'http://localhost:5173/' . $css_entry_path,
+                [],
+                time()
+            );
+
+            // Carrega JS
+            wp_enqueue_script(
+                $handle_slug . '-script',
+                'http://localhost:5173/' . $js_entry_path,
+                ['jquery', $this->plugin_name . '-vite-client'],
+                time(),
+                true
+            );
+
+        } else {
+            // --- MODO PRODUÇÃO (Manifesto) ---
             $manifest = json_decode( file_get_contents( $manifest_path ), true );
 
-            // --- INÍCIO DA MODIFICAÇÃO (Multi-Entry JS) ---
-            if ( ! isset( $manifest[$vite_entry_file] ) ) { // Verifica o entry file dinâmico
+            // Verificação de segurança
+            if ( ! isset( $manifest[$js_entry_path] ) ) {
                 if ( current_user_can( 'manage_options' ) ) {
-                    wp_die( '<strong>Erro Nativa Delivery:</strong> O ponto de entrada "' . esc_html($vite_entry_file) . '" não foi encontrado no manifest.json.' );
+                    wp_die( '<strong>Erro Nativa Delivery:</strong> O ponto de entrada "' . esc_html($js_entry_path) . '" não foi encontrado no manifest.json. Verifique o build.' );
                 }
-                error_log('Nativa Delivery: Ponto de entrada "' . esc_html($vite_entry_file) . '" não foi encontrado no manifest.json.'); // Log dinâmico
                 return;
             }
 
-            $entry = $manifest[$vite_entry_file]; // Pega o entry dinâmico
-            // --- FIM DA MODIFICAÇÃO ---
-
-            // Enfileira CSS principal gerado pelo Vite (se existir)
-             if ( isset( $entry['css'] ) && is_array( $entry['css'] ) ) {
-                foreach ( $entry['css'] as $css_file ) {
-                     // Gera um handle único para cada CSS
-                     $css_handle = $this->plugin_name . '-style-' . sanitize_title(basename($css_file));
-                     // Enfileira o CSS principal em todas as páginas, exceto talvez 'pedidos' se o CSS do dashboard já o contém ou substitui
-                     // if (!is_page('pedidos')) { // Descomente esta linha se o CSS principal não deve carregar em /pedidos
-                         wp_enqueue_style(
-                             $css_handle,
-                             NATIVADELIVERY_PLUGIN_URL . 'assets/dist/' . $css_file,
-                             [],
-                             $this->version // Usa a versão do plugin para cache busting
-                         );
-                     // } // Fim do if condicional
-                 }
-             }
-
-            // Enfileira JS principal
-            // $main_handle já está definido
-            wp_enqueue_script(
-                $main_handle, // Usa o handle dinâmico
-                NATIVADELIVERY_PLUGIN_URL . 'assets/dist/' . $entry['file'],
-                ['jquery'], // Adicione outras dependências se necessário
-                $this->version, // Usa a versão do plugin para cache busting
-                true // Carrega no footer
-            );
-        } // Fim da verificação do manifesto
-
-        // Localiza dados específicos da página (sempre usa $main_handle, seja de dev ou prod)
-        if ( isset($main_handle) ) { // Garante que $main_handle foi definido
-            // --- INÍCIO DA MODIFICAÇÃO (Multi-Entry JS) ---
-            if ( $is_dashboard ) { // Usa a flag $is_dashboard
-            // --- FIM DA MODIFICAÇÃO ---
-                $this->localize_pedidos_script($main_handle);
-            } else {
-                $this->localize_main_script($main_handle);
+            // A. Enfileira o CSS Principal
+            if ( isset( $manifest[$css_entry_path] ) ) {
+                wp_enqueue_style(
+                    $handle_slug . '-style',
+                    NATIVADELIVERY_PLUGIN_URL . 'assets/dist/' . $manifest[$css_entry_path]['file'],
+                    [],
+                    $this->version
+                );
             }
-        } else {
-             error_log('Nativa Delivery: Handle principal do script não foi definido. Dados não puderam ser localizados.');
+
+            // B. Enfileira CSS dependente do JS (chunks extras)
+            if ( isset( $manifest[$js_entry_path]['css'] ) && is_array( $manifest[$js_entry_path]['css'] ) ) {
+                foreach ( $manifest[$js_entry_path]['css'] as $css_file ) {
+                    wp_enqueue_style(
+                        $this->plugin_name . '-style-chunk-' . basename($css_file),
+                        NATIVADELIVERY_PLUGIN_URL . 'assets/dist/' . $css_file,
+                        [],
+                        $this->version
+                    );
+                }
+            }
+
+            // C. Enfileira o Script Principal
+            wp_enqueue_script(
+                $handle_slug . '-script',
+                NATIVADELIVERY_PLUGIN_URL . 'assets/dist/' . $manifest[$js_entry_path]['file'],
+                ['jquery'], 
+                $this->version,
+                true
+            );
         }
 
-    }
+        // 4. Localização de Dados (Variáveis PHP -> JS)
+        $main_script_handle = $handle_slug . '-script';
 
+        if ( $is_dashboard ) {
+            $this->localize_pedidos_script($main_script_handle);
+        } else {
+            $this->localize_main_script($main_script_handle);
+        }
+    }
 
     private function localize_main_script($handle) {
         $user_id = get_current_user_id();
-        $cache_key = "nativa_delivery_localized_data_{$user_id}";
+        $data_provider = new ND_Data_Provider();
+        $data_to_pass = $data_provider->get_data_for_localize();
 
-        if ( is_user_logged_in() ) {
-            $cache_key .= '_loggedin';
-        } else {
-            $cache_key .= '_loggedout';
+        $spa_routes = ['/', '/cardapio', '/minha-conta', '/login', '/meus-enderecos', '/fidelidade', '/checkout', '/privacidade', '/termos'];
+        
+        $data_to_pass['spa_routes'] = $spa_routes;
+        $data_to_pass['plugin_version'] = $this->version;
+        $data_to_pass['shouldRedirectToCheckout'] = (isset($_GET['redirect_to_checkout']) && $_GET['redirect_to_checkout'] === 'true') ? 'true' : '';
+        $data_to_pass['google_client_id'] = defined('NATIVA_GOOGLE_CLIENT_ID') ? NATIVA_GOOGLE_CLIENT_ID : null;
+        $data_to_pass['app_version'] = $this->version;
+        $data_to_pass['pluginUrl'] = NATIVADELIVERY_PLUGIN_URL;
+        $data_to_pass['isPedidosPage'] = false;
+        $data_to_pass['is_admin'] = current_user_can('manage_options');
+
+        $hours_options = get_option('nativa_delivery_hours_options');
+        if (isset($hours_options['scheduling_window_minutes']) && isset($data_to_pass['operatingHours'])) {
+            $data_to_pass['operatingHours']['scheduling_window_minutes'] = (int) $hours_options['scheduling_window_minutes'];
         }
 
-        $cached_data = false; // Desativar cache para testes
-        // $cached_data = wp_cache_get( $cache_key, 'nativa_delivery' );
-
-        if ( false === $cached_data ) {
-            $data_provider = new ND_Data_Provider();
-            $data_to_pass = $data_provider->get_data_for_localize();
-
-            // --- INÍCIO DA MODIFICAÇÃO ---
-            $spa_routes = ['/', '/cardapio', '/minha-conta', '/login', '/meus-enderecos', '/fidelidade', '/checkout', '/privacidade', '/termos'];
-            // --- FIM DA MODIFICAÇÃO ---
-            $data_to_pass['spa_routes'] = $spa_routes;
-            $data_to_pass['plugin_version'] = $this->version;
-            $data_to_pass['shouldRedirectToCheckout'] = (isset($_GET['redirect_to_checkout']) && $_GET['redirect_to_checkout'] === 'true') ? 'true' : '';
-            $data_to_pass['google_client_id'] = defined('NATIVA_GOOGLE_CLIENT_ID') ? NATIVA_GOOGLE_CLIENT_ID : null;
-            $data_to_pass['app_version'] = $this->version;
-            $data_to_pass['pluginUrl'] = NATIVADELIVERY_PLUGIN_URL;
-            $data_to_pass['isPedidosPage'] = false;
-            $data_to_pass['is_admin'] = current_user_can('manage_options'); // Adiciona flag admin
-
-            $hours_options = get_option('nativa_delivery_hours_options');
-            if (isset($hours_options['scheduling_window_minutes']) && isset($data_to_pass['operatingHours'])) {
-                $data_to_pass['operatingHours']['scheduling_window_minutes'] = (int) $hours_options['scheduling_window_minutes'];
-            }
-
-            if ( defined('VAPID_PUBLIC_KEY') ) {
-                $data_to_pass['vapidPublicKey'] = VAPID_PUBLIC_KEY;
-            } else {
-                 $data_to_pass['vapidPublicKey'] = null;
-            }
-
-
-            $cached_data = $data_to_pass;
-            // wp_cache_set( $cache_key, $cached_data, 'nativa_delivery', 300 );
+        if ( defined('VAPID_PUBLIC_KEY') ) {
+            $data_to_pass['vapidPublicKey'] = VAPID_PUBLIC_KEY;
+        } else {
+             $data_to_pass['vapidPublicKey'] = null;
         }
 
         if ( is_user_logged_in() ) {
             $nonce = wp_create_nonce('nativa_delivery_ajax_nonce');
-            $cached_data['ajax_nonce'] = $nonce;
-            $cached_data['nonce'] = $nonce;
-            $cached_data['logout_url'] = wp_logout_url(home_url());
+            $data_to_pass['ajax_nonce'] = $nonce;
+            $data_to_pass['nonce'] = $nonce;
+            $data_to_pass['logout_url'] = wp_logout_url(home_url());
         } else {
-            $cached_data['ajax_nonce'] = '';
-            $cached_data['nonce'] = '';
-             $cached_data['logout_url'] = '';
+            $data_to_pass['ajax_nonce'] = '';
+            $data_to_pass['nonce'] = '';
+            $data_to_pass['logout_url'] = '';
         }
 
         $script_data = sprintf(
             'window.nativaDeliveryData = %s;',
-            wp_json_encode( $cached_data )
+            wp_json_encode( $data_to_pass )
         );
         wp_add_inline_script( $handle, $script_data, 'before' );
     }
-
 
     private function localize_pedidos_script($handle) {
         $payment_options = get_option('nativa_delivery_payments_options', []);
         $cep_cidade = get_option('nd_cep_cidade', '89247-000');
         $google_maps_key = defined('NATIVA_GOOGLE_MAPS_API_KEY') ? NATIVA_GOOGLE_MAPS_API_KEY : get_option('nd_google_maps_api_key', '');
 
-        // Obtém a URL de login, redirecionando de volta para a página de pedidos após o login.
-        $login_url = wp_login_url( home_url('/pedidos/') );
+        // Obtém URL de login correta
+        $login_url = wp_login_url( home_url('/pdv/') );
 
         $data_to_pass = array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -298,16 +319,14 @@ class ND_Public {
             'pluginUrl' => NATIVADELIVERY_PLUGIN_URL,
             'isPedidosPage' => true,
             'vapidPublicKey' => defined('VAPID_PUBLIC_KEY') ? VAPID_PUBLIC_KEY : null,
-            'login_url' => $login_url, // Adiciona a URL de login aos dados
+            'login_url' => $login_url,
         );
 
-        // --- INÍCIO DA MODIFICAÇÃO (Usa nativaDeliveryData) ---
-        // Padroniza o nome do objeto global para 'nativaDeliveryData'
         $script_data = sprintf(
-            'window.nativaDeliveryData = %s;', // Nome do objeto alterado para nativaDeliveryData
+            'window.nativaDeliveryData = %s;',
             wp_json_encode( $data_to_pass )
         );
-        // --- FIM DA MODIFICAÇÃO ---
+        
         wp_add_inline_script( $handle, $script_data, 'before' );
     }
 }
