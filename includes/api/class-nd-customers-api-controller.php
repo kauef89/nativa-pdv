@@ -1,134 +1,137 @@
 <?php
 /**
- * Controlador REST API para Gestão de Clientes no PDV.
- * VERSÃO 2.3: Suporte a 'local_only' para economia de API e fluxo otimizado.
+ * Controlador REST API para Dados do Cliente.
+ * VERSÃO 3.0 (SQL MIGRATION): Busca histórico nas tabelas personalizadas.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class ND_Customers_API_Controller {
 
+    private $wpdb;
+
+    public function __construct() {
+        global $wpdb;
+        $this->wpdb = $wpdb;
+    }
+
     public function register_routes() {
-        register_rest_route( 'nativa-delivery/v1', '/customers/search', array(
+        $namespace = 'nativa-delivery/v1';
+
+        // Endpoint: Meus Pedidos
+        register_rest_route( $namespace, '/customers/me/orders', array(
             'methods'             => 'GET',
-            'callback'            => array( $this, 'search_customers' ),
-            'permission_callback' => '__return_true', 
-            'args'                => array(
-                'term' => array( 'required' => true )
-            ),
+            'callback'            => array( $this, 'get_my_orders' ),
+            'permission_callback' => function() { return is_user_logged_in(); },
         ) );
 
-        register_rest_route( 'nativa-delivery/v1', '/customers/create', array(
-            'methods'             => 'POST',
-            'callback'            => array( $this, 'create_customer' ),
-            'permission_callback' => '__return_true',
+        // Endpoint: Detalhe do Pedido (Opcional, mas útil para o App)
+        register_rest_route( $namespace, '/customers/orders/(?P<id>\d+)', array(
+            'methods'             => 'GET',
+            'callback'            => array( $this, 'get_order_details' ),
+            'permission_callback' => function() { return is_user_logged_in(); },
         ) );
     }
 
-    public function search_customers( $request ) {
-        $raw_term   = $request->get_param( 'term' );
-        $local_only = $request->get_param( 'local_only' ) === 'true'; // Novo parâmetro
-        $clean_term = preg_replace( '/[^0-9]/', '', $raw_term );
+    /**
+     * Retorna lista de pedidos do usuário logado.
+     */
+    public function get_my_orders( $request ) {
+        $user_id = get_current_user_id();
+        $table_p = $this->wpdb->prefix . 'nativa_pdv_pedidos';
+        $table_i = $this->wpdb->prefix . 'nativa_pdv_itens_pedido';
 
-        // 1. Busca Local
-        $args = array(
-            'number' => 10,
-            'fields' => array( 'ID', 'display_name', 'user_email' ),
-        );
+        // Busca os últimos 20 pedidos do cliente
+        $orders = $this->wpdb->get_results( $this->wpdb->prepare(
+            "SELECT * FROM $table_p WHERE cliente_id = %d ORDER BY id DESC LIMIT 20",
+            $user_id
+        ));
 
-        if ( is_numeric( $clean_term ) && strlen( $clean_term ) > 4 ) {
-            $args['meta_query'] = array(
-                'relation' => 'OR',
-                array( 'key' => 'nativa_user_phone', 'value' => $clean_term, 'compare' => 'LIKE' ),
-                array( 'key' => 'nativa_user_cpf', 'value' => $clean_term, 'compare' => 'LIKE' ),
-                array( 'key' => 'nativa_user_cpf', 'value' => $this->format_cpf($clean_term), 'compare' => 'LIKE' ) 
-            );
-        } else {
-            // Se não for numérico, assume busca por nome (apenas local)
-            $args['search'] = '*' . $raw_term . '*';
-            $args['search_columns'] = array( 'display_name', 'user_email' );
-        }
+        $formatted_orders = [];
 
-        $user_query = new WP_User_Query( $args );
-        $results = array();
-        $found_local = false;
+        foreach ( $orders as $order ) {
+            // Busca itens deste pedido
+            $items = $this->wpdb->get_results( $this->wpdb->prepare(
+                "SELECT * FROM $table_i WHERE pedido_id = %d", 
+                $order->id
+            ));
 
-        if ( ! empty( $user_query->get_results() ) ) {
-            foreach ( $user_query->get_results() as $user ) {
-                $found_local = true;
-                $celular = get_user_meta( $user->ID, 'nativa_user_phone', true );
-                $cpf     = get_user_meta( $user->ID, 'nativa_user_cpf', true );
-                
-                $results[] = array(
-                    'id'    => $user->ID,
-                    'name'  => $user->display_name,
-                    'phone' => $celular,
-                    'cpf'   => $cpf,
-                    'source'=> 'local'
-                );
+            $formatted_items = [];
+            foreach ( $items as $item ) {
+                $opts = json_decode( $item->adicionais_json, true );
+                $formatted_items[] = [
+                    'name'     => $item->nome_produto,
+                    'quantity' => $item->quantidade,
+                    'total'    => $item->subtotal,
+                    'options'  => $opts
+                ];
             }
+
+            $meta = json_decode( $order->metadados_json, true );
+            $formatted_orders[] = [
+                'id'           => $order->id,
+                'status'       => $order->status,
+                'date'         => $order->data_criacao,
+                'date_formatted' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $order->data_criacao ) ),
+                'total'        => $order->total_geral,
+                'type'         => $order->tipo_servico, // delivery, pickup
+                'payment_method' => $this->format_payment_method_name( $order->id ),
+                'items'        => $formatted_items,
+                'address'      => $meta['address'] ?? null,
+                'is_active'    => !in_array( $order->status, ['finalizado', 'cancelado'] )
+            ];
         }
 
-        // 2. Integração Gov.br (Apenas se não achou local E local_only for false)
-        if ( ! $found_local && ! $local_only && class_exists('ND_Gov_API_Helper') && ND_Gov_API_Helper::is_cpf_valid( $clean_term ) ) {
-            
-            $gov_data = ND_Gov_API_Helper::consult_cpf( $clean_term );
-            
-            if ( ! is_wp_error( $gov_data ) && ( isset($gov_data['success']) && $gov_data['success'] === true || isset($gov_data['name']) ) ) {
-                $name = $gov_data['name'] ?? 'Cidadão Identificado';
-                $dob  = $gov_data['dob'] ?? '';
-
-                $results[] = array(
-                    'id'     => 0,
-                    'name'   => $name,
-                    'phone'  => '', 
-                    'cpf'    => $this->format_cpf($clean_term),
-                    'dob'    => $dob,
-                    'source' => 'gov_api' 
-                );
-            }
-        }
-
-        return new WP_REST_Response( array( 'success' => true, 'customers' => $results ), 200 );
+        return new WP_REST_Response( $formatted_orders, 200 );
     }
 
-    public function create_customer( $request ) {
-        $name  = sanitize_text_field( $request->get_param( 'name' ) );
-        $phone = sanitize_text_field( $request->get_param( 'phone' ) );
-        $cpf   = sanitize_text_field( $request->get_param( 'cpf' ) );
-        $dob   = sanitize_text_field( $request->get_param( 'dob' ) );
+    /**
+     * Retorna detalhes de um pedido específico (para a tela de detalhes/tracking).
+     */
+    public function get_order_details( $request ) {
+        $order_id = $request->get_param( 'id' );
+        $user_id  = get_current_user_id();
+        $table_p  = $this->wpdb->prefix . 'nativa_pdv_pedidos';
 
-        if ( empty( $name ) ) return new WP_Error( 'missing_data', 'Nome obrigatório.', array('status'=>400) );
-        if ( empty( $phone ) ) return new WP_Error( 'missing_data', 'Telefone obrigatório.', array('status'=>400) );
+        // Verifica se o pedido pertence ao usuário
+        $order = $this->wpdb->get_row( $this->wpdb->prepare(
+            "SELECT * FROM $table_p WHERE id = %d AND cliente_id = %d",
+            $order_id, $user_id
+        ));
 
-        $login = !empty($phone) ? preg_replace('/[^0-9]/','',$phone) : 'cli_'.time();
-        if ( username_exists( $login ) ) $login .= '_' . rand(1,99);
-
-        $email = $login . '@cliente.local';
-        
-        $user_id = wp_create_user( $login, wp_generate_password(), $email );
-
-        if ( is_wp_error( $user_id ) ) {
-            return new WP_Error('create_err', $user_id->get_error_message(), array('status'=>500));
+        if ( ! $order ) {
+            return new WP_Error( 'not_found', 'Pedido não encontrado ou acesso negado.', array( 'status' => 404 ) );
         }
 
-        wp_update_user( array( 'ID' => $user_id, 'display_name' => $name, 'first_name' => $name ) );
+        // Monta resposta detalhada (reutilizando lógica se possível)
+        // Aqui podemos adicionar timeline, status do entregador, etc.
+        $meta = json_decode( $order->metadados_json, true );
         
-        if( !empty($phone) ) update_user_meta( $user_id, 'nativa_user_phone', $phone );
-        if( !empty($cpf) ) update_user_meta( $user_id, 'nativa_user_cpf', $cpf );
-        if( !empty($dob) ) update_user_meta( $user_id, 'nativa_user_dob', $dob );
+        $response = [
+            'id' => $order->id,
+            'status' => $order->status,
+            'timeline' => $meta['status_log'] ?? [],
+            'delivery_address' => $meta['address'] ?? null,
+            // ... outros detalhes necessários para o tracking
+        ];
 
-        $u = new WP_User( $user_id ); 
-        $u->set_role( 'subscriber' );
-
-        return new WP_REST_Response( array( 
-            'success' => true, 
-            'customer' => array( 'id' => $user_id, 'name' => $name, 'phone' => $phone ) 
-        ), 200 );
+        return new WP_REST_Response( $response, 200 );
     }
 
-    private function format_cpf($cpf) {
-        if (strlen($cpf) != 11) return $cpf;
-        return substr($cpf, 0, 3) . '.' . substr($cpf, 3, 3) . '.' . substr($cpf, 6, 3) . '-' . substr($cpf, 9, 2);
+    // Helper simples para pegar nome do método de pagamento
+    private function format_payment_method_name( $order_id ) {
+        $table_pay = $this->wpdb->prefix . 'nativa_pdv_pagamentos';
+        $methods = $this->wpdb->get_col( $this->wpdb->prepare(
+            "SELECT metodo_pagamento FROM $table_pay WHERE pedido_id = %d",
+            $order_id
+        ));
+        
+        if ( empty( $methods ) ) return 'N/A';
+        
+        $names = array_map( function($m) {
+            return ucfirst( str_replace( ['-', '_'], ' ', $m ) );
+        }, $methods );
+
+        return implode( ', ', $names );
     }
 }
