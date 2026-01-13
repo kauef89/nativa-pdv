@@ -1,0 +1,83 @@
+/* assets/src/styles/pdv/modules/new-order/_modals.css */
+
+/* === ENCAPSULAMENTO REAL (DOM Teleport) === */
+
+.pdv-side-sheet .nativa-bottom-sheet.is-encapsulated {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 20 !important;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    background: transparent;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.pdv-side-sheet .nativa-bottom-sheet.is-encapsulated.is-visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.pdv-side-sheet
+    .nativa-bottom-sheet.is-encapsulated
+    .nativa-bottom-sheet-content {
+    width: 100%;
+    max-height: 90%;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Esconde Handle Mobile */
+.pdv-side-sheet
+    .nativa-bottom-sheet.is-encapsulated
+    .nativa-bottom-sheet-handle {
+    display: none !important;
+}
+
+/* Botão Voltar (Seta) */
+.pdv-sheet-back-btn {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.pdv-sheet-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.pdv-sheet-back-btn .material-symbols-rounded {
+    font-size: 24px;
+}
+
+/* Ajuste Header */
+.pdv-side-sheet
+    .nativa-bottom-sheet.is-encapsulated
+    .nativa-bottom-sheet-header {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+}
+
+/* Overlays Internos */
+.pdv-side-sheet .nativa-bottom-sheet-overlay,
+.pdv-side-sheet .nativa-product-details-overlay {
+    position: absolute !important;
+    border-radius: 0;
+    z-index: 15 !important;
+}

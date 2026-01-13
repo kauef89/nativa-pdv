@@ -1,0 +1,117 @@
+/* assets/src/styles/pdv/modules/new-order/_menu.css */
+
+/* --- Layout da Aba Menu --- */
+#tab-menu {
+    overflow-y: auto; /* Devolve o scroll apenas para o menu */
+    padding: var(--space-xl); /* Devolve o padding apenas para o menu */
+}
+
+/* --- UI Geral do Menu --- */
+.pdv-tab-pane #nativa-product-search {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--md-sys-color-surface-container-low);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-small);
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--space-lg);
+}
+
+.nativa-category-pills-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.nativa-category-pills-container::-webkit-scrollbar {
+    display: none;
+}
+
+.nativa-category-pill {
+    background: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface-variant);
+    border-color: var(--md-sys-color-outline-variant);
+}
+
+.nativa-category-pill.is-active {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-color: var(--md-sys-color-primary);
+}
+
+/* --- Títulos de Categoria Compactos --- */
+.pdv-product-grid .nativa-menu-category-header {
+    padding: 12px 0;
+    margin-top: 10px;
+}
+.pdv-product-grid .nativa-category-image {
+    width: 40px;
+    height: 40px;
+}
+.pdv-product-grid .nativa-menu-category-title {
+    font-size: 1.1rem;
+}
+
+/* === CARD DE PRODUTO COMPACTO (Estilo Lista) === */
+
+.pdv-product-grid .nativa-product-card {
+    background: var(--md-sys-color-surface-container-low);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-small);
+    padding: 10px 16px;
+    margin-bottom: 8px;
+
+    /* Layout Horizontal */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: unset;
+}
+
+/* Oculta elementos do consumer */
+.pdv-product-grid .nativa-product-description,
+.pdv-product-grid .nativa-combo-details-grid,
+.pdv-product-grid .card-separator,
+.pdv-product-grid .nativa-product-tags,
+.pdv-product-grid .nativa-product-image-container {
+    display: none !important;
+}
+
+/* Nome */
+.pdv-product-grid .nativa-product-info {
+    flex: 1;
+    margin-right: 12px;
+    width: auto;
+}
+
+.pdv-product-grid .nativa-product-name {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Preço */
+.pdv-product-grid .nativa-product-card-footer {
+    margin-top: 0;
+    width: auto;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+}
+
+.pdv-product-grid .nativa-product-price-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.pdv-product-grid .nativa-product-price,
+.pdv-product-grid .nativa-product-promo-price {
+    color: var(--md-sys-color-tertiary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    background: none;
+    padding: 0;
+}

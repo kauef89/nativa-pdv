@@ -1,0 +1,209 @@
+/* assets/src/styles/pdv/modules/new-order/_payment.css */
+
+/* --- Modal Base (Centralizado) --- */
+.nativa-center-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10010; /* Acima da Side Sheet (que é 9999) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    backdrop-filter: blur(2px);
+}
+
+.nativa-center-modal-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.nativa-center-modal {
+    background: var(--md-sys-color-surface);
+    width: 90%;
+    max-width: 500px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--md-sys-elevation-3);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.nativa-center-modal-overlay.is-visible .nativa-center-modal {
+    transform: scale(1);
+}
+
+.nativa-center-modal.is-large {
+    max-width: 900px; /* Largura maior para o grid de pagamento */
+}
+
+/* Header do Modal */
+.nativa-modal-header {
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--md-sys-color-surface-container);
+}
+
+.nativa-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* --- Layout do Grid de Pagamento --- */
+.payment-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px; /* Esquerda Flexível | Direita Fixa */
+    height: 500px; /* Altura fixa para garantir layout consistente */
+    padding: 0 !important; /* Remove padding padrão do modal body */
+    overflow: hidden;
+}
+
+/* Coluna da Esquerda (Métodos e Input) */
+.payment-methods-col {
+    padding: var(--space-xl);
+    overflow-y: auto;
+}
+
+/* Coluna da Direita (Resumo e Lista) */
+.payment-summary-col {
+    background: var(--md-sys-color-surface-container-low);
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Display de Total Gigante */
+.nativa-total-display {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    padding: var(--space-lg);
+    background: var(--md-sys-color-surface-container);
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.nativa-total-display small {
+    display: block;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 4px;
+}
+
+.nativa-total-display span {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--md-sys-color-primary);
+    line-height: 1.2;
+}
+
+/* Grid de Botões de Método */
+.nativa-payment-methods-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.nativa-payment-button {
+    padding: var(--space-lg);
+    background: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    color: var(--md-sys-color-on-surface);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.nativa-payment-button:hover {
+    background: var(--md-sys-color-surface-container-high);
+    border-color: var(--md-sys-color-outline);
+}
+
+.nativa-payment-button.selected {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 1px var(--md-sys-color-primary);
+}
+
+/* Input de Valor */
+.payment-methods-col .nativa-form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.payment-methods-col .nativa-input {
+    font-size: 1.2rem;
+    padding: 12px;
+    text-align: right;
+}
+
+/* Lista de Pagamentos Lançados */
+.nativa-payment-list {
+    background: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--border-radius-medium);
+    margin-bottom: var(--space-lg);
+    flex: 1; /* Ocupa espaço restante na coluna direita */
+    overflow-y: auto;
+}
+
+.nativa-payment-list > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    font-size: 0.95rem;
+}
+
+.nativa-payment-list > div strong {
+    color: var(--md-sys-color-primary);
+}
+
+/* Rodapé de Ações */
+.payment-actions-footer {
+    margin-top: auto;
+}
+
+.payment-actions-footer button {
+    width: 100%;
+    height: 50px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 800px) {
+    .payment-grid-layout {
+        grid-template-columns: 1fr; /* Vira uma coluna só */
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .payment-summary-col {
+        border-left: none;
+        border-top: 1px solid var(--md-sys-color-outline-variant);
+    }
+}

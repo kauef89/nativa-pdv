@@ -5,6 +5,7 @@ import {
     getMyAddresses,
     submitOrder,
     validateCoupon,
+    getAddressesByUserId, // Importado de api-service.js
 } from '@core/api/api-service.js';
 
 import { state } from '@core/state/global-state.js';
@@ -40,7 +41,7 @@ import {
 } from './checkout-ui.js';
 
 // Função para atualizar o texto do botão
-function updateCheckoutButtonText() {
+export function updateCheckoutButtonText() {
     const submitButton = document.getElementById('nativa-confirm-order-button');
     if (!submitButton) return;
 
@@ -66,10 +67,32 @@ async function _loadUserData() {
     if (!form) return;
 
     try {
-        const addressesData = await getMyAddresses();
+        let addressesData;
+
+        // LÓGICA PDV: Se for PDV e tivermos um cliente selecionado, busca os endereços DELE
+        if (window.nativaData?.isPedidosPage && state.user?.id) {
+            console.log(
+                '[Checkout] Carregando endereços do cliente ID:',
+                state.user.id
+            );
+            if (typeof getAddressesByUserId === 'function') {
+                addressesData = await getAddressesByUserId(state.user.id);
+            } else {
+                addressesData = await getMyAddresses();
+            }
+        } else {
+            // LÓGICA CONSUMER: Busca endereços do usuário logado (cookie)
+            addressesData = await getMyAddresses();
+        }
 
         if (!state.user) state.user = {};
-        const addresses = decodeStreetNames(addressesData);
+
+        // Garante que addressesData seja um array
+        const rawAddresses = Array.isArray(addressesData)
+            ? addressesData
+            : addressesData.addresses || [];
+
+        const addresses = decodeStreetNames(rawAddresses);
         state.user.addresses = addresses;
 
         const cartSelectedAddressId = sessionStorage.getItem(
@@ -105,20 +128,20 @@ async function _loadUserData() {
 
         updateAddressActionButton(addresses.length > 0);
     } catch (error) {
-        console.error(
-            'Não foi possível carregar os dados do usuário logado.',
-            error
-        );
-        showToast(
-            'Erro ao carregar seus dados. Tente recarregar a página.',
-            'error'
-        );
+        console.error('Não foi possível carregar os dados do usuário.', error);
+        // No PDV, falhas silenciosas são preferíveis a alertas intrusivos no load
+        if (!window.nativaData?.isPedidosPage) {
+            showToast('Erro ao carregar dados do usuário.', 'error');
+        }
     }
 
     handleRecalculateTotalsAndFrete();
 }
 
 async function _startOnboardingFlow() {
+    // No PDV, pulamos validações de perfil do usuário (assumimos que o atendente já resolveu)
+    if (window.nativaData?.isPedidosPage) return false;
+
     try {
         const accountData = await getMyAccountData();
 
@@ -127,12 +150,7 @@ async function _startOnboardingFlow() {
             const needsDob = !accountData.dateOfBirth;
             if (initOnboarding) {
                 initOnboarding(needsDob);
-                return true; // Interrompe fluxo para onboarding de dados
-            } else {
-                console.error(
-                    'OnboardingHandler não encontrado. Não foi possível iniciar o wizard.'
-                );
-                showToast('Erro ao iniciar o formulário de cadastro.', 'error');
+                return true;
             }
         }
         // 2. Endereço (Apenas se for Delivery)
@@ -140,17 +158,13 @@ async function _startOnboardingFlow() {
             state.user.addresses.length === 0 &&
             state.selectedModality === 'delivery'
         ) {
-            // --- INÍCIO DA MODIFICAÇÃO (Onboarding Rules) ---
-            // Apenas força a criação de endereço se a modalidade for Delivery.
-            // Para Retirada, Mesa ou sem modalidade (independente), não exige endereço aqui.
             handleOpenAddressSheet();
-            return true; // Interrompe fluxo para onboarding de endereço
-            // --- FIM DA MODIFICAÇÃO ---
+            return true;
         }
     } catch {
-        showToast('Não foi possível verificar os dados da sua conta.', 'error');
+        // Ignora erro silenciosamente
     }
-    return false; // Fluxo liberado
+    return false;
 }
 
 export function handlePaymentMethodChange(e) {
@@ -196,13 +210,10 @@ function _showOfferSheet(offerData) {
     );
     if (product) {
         openProductDetails(product, null, null, offerData);
-    } else {
-        showToast('Produto da oferta não encontrado.', 'error');
     }
 }
 
 function _checkForAndShowOffer() {
-    console.log('[SONDA Ofertas FE] _checkForAndShowOffer INICIADA.');
     const offer = state.cart.offer;
     if (offer) {
         _showOfferSheet(offer);
@@ -218,10 +229,7 @@ export async function handleAddOfferToCart(button) {
     const offerDataStr = button.dataset.offerData;
     const productId = button.dataset.productId;
 
-    if (!offerDataStr || !productId) {
-        showToast('Erro: Dados da oferta incompletos.', 'error');
-        return;
-    }
+    if (!offerDataStr || !productId) return;
 
     try {
         const offerData = JSON.parse(offerDataStr);
@@ -231,20 +239,18 @@ export async function handleAddOfferToCart(button) {
 
         if (product) {
             openProductDetails(product, null, null, offerData);
-        } else {
-            showToast('Produto da oferta não encontrado.', 'error');
         }
     } catch (e) {
-        console.error('Erro ao processar dados da oferta:', e);
-        showToast('Erro ao tentar exibir a oferta.', 'error');
+        console.error('Erro oferta:', e);
     }
 }
 
+// --- Handler Principal de Carregamento da Página ---
 export async function handlePageLoad() {
     if (!state.user.isLoggedIn) {
         const loginSheet = document.getElementById('nativa-login-prompt-sheet');
         if (loginSheet) {
-            showToast('Faça login para continuar com seu pedido.', 'info');
+            showToast('Faça login para continuar.', 'info');
             loginSheet.classList.add('is-unclosable');
             openSheet(loginSheet);
         }
@@ -252,12 +258,22 @@ export async function handlePageLoad() {
     }
 
     try {
-        if (state.cart.count === 0) {
-            showToast(
-                'Seu carrinho está vazio! Adicione itens para finalizar o pedido.',
-                'info'
-            );
-            Router.navigateTo('/');
+        // Verifica se carrinho tem itens
+        if (
+            !state.cart.contents ||
+            Object.keys(state.cart.contents).length === 0
+        ) {
+            showToast('Carrinho vazio!', 'warning');
+
+            // Navegação de volta
+            if (
+                window.nativaData?.isPedidosPage &&
+                window.pdvApp?.toggleCartView
+            ) {
+                window.pdvApp.toggleCartView('cart');
+            } else {
+                Router.navigateTo('/');
+            }
             return;
         }
 
@@ -266,16 +282,19 @@ export async function handlePageLoad() {
         renderPaymentMethods();
 
         await _loadUserData();
+
         const needsOnboarding = await _startOnboardingFlow();
         if (!needsOnboarding) {
             _checkForAndShowOffer();
         }
+
         const scheduleSection = document.getElementById(
             'nativa-schedule-order-section'
         );
         if (scheduleSection) {
             scheduleSection.style.display = 'none';
         }
+
         updateCheckoutButtonText();
 
         setTimeout(() => {
@@ -285,24 +304,17 @@ export async function handlePageLoad() {
             );
         }, 50);
     } catch (error) {
-        console.error('Erro no handlePageLoad do checkout:', error);
-        showToast(
-            'Erro ao carregar dados do checkout. Tente recarregar.',
-            'error'
-        );
+        console.error('Erro handlePageLoad:', error);
     }
 }
 
+// --- EXPORTAÇÃO CRUCIAL (Alias para compatibilidade com importação no PDV) ---
+export const loadAndRenderCheckout = handlePageLoad;
+
 export function handleModalityChange(event) {
-    if (
-        provideFeedbackForDisabledElement(
-            event,
-            '.nativa-order-button',
-            'Este serviço não está disponível no momento.'
-        )
-    ) {
+    if (provideFeedbackForDisabledElement(event, '.nativa-order-button'))
         return;
-    }
+
     const button = event.target.closest('.nativa-order-button');
     if (!button) return;
 
@@ -331,7 +343,8 @@ export async function handleApplyCoupon(event) {
     const cpfInput = form.querySelector('#nativa-customer-cpf');
 
     if (!couponInput.value) {
-        throw new APIError('Por favor, insira um código de cupom.');
+        showToast('Insira um código de cupom.', 'warning');
+        return;
     }
 
     try {
@@ -354,11 +367,9 @@ export async function handleApplyCoupon(event) {
         updateTotals(state);
         couponInput.classList.add('is-error-coupon');
         couponInput.classList.remove('is-valid-coupon');
-        if (error instanceof APIError) {
-            throw error;
-        } else {
-            throw new APIError(error.message || 'Erro ao validar cupom.');
-        }
+
+        const msg = error.message || 'Cupom inválido.';
+        showToast(msg, 'error');
     }
 }
 
@@ -376,30 +387,21 @@ async function _validateCheckoutPrerequisites(form) {
         changeValue <= totalValue
     ) {
         const userConfirmation = await showModal({
-            title: 'Pagamento em Dinheiro',
+            title: 'Troco Inválido?',
             iconName: 'request_quote',
-            message: `Você indicou que precisa de troco, mas o valor informado (${formatPrice(changeValue)}) é menor ou igual ao total do pedido (${formatPrice(totalValue)}). Deseja continuar assim mesmo (sem troco)?`,
-            confirmText: 'Continuar sem Troco',
-            cancelText: 'Voltar e Corrigir',
+            message: `Valor para troco (${formatPrice(changeValue)}) é menor que o total (${formatPrice(totalValue)}). Continuar sem troco?`,
+            confirmText: 'Sim, sem troco',
+            cancelText: 'Corrigir',
         });
 
         if (!userConfirmation) {
-            if (changeValueInput) {
-                changeValueInput.focus();
-                changeValueInput.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
-            }
+            if (changeValueInput) changeValueInput.focus();
             return false;
         }
     }
 
     if (state.selectedModality === 'delivery' && !state.selectedBairro) {
-        showToast(
-            'Por favor, selecione ou cadastre um endereço para a entrega.',
-            'error'
-        );
+        showToast('Selecione um endereço para entrega.', 'error');
         return false;
     }
 
@@ -424,15 +426,7 @@ function _handleOrderSubmissionResponse(result) {
         sessionStorage.setItem('nativaLastOrderPoints', result.points_earned);
     }
 
-    // --- CORREÇÃO: Transforma o Objeto de itens do carrinho em Array ---
-    // state.cart.contents é um Objeto { "hash1": {...}, "hash2": {...} }
-    // Usamos Object.values() para torná-lo iterável para o GA4 e Pixel.
-    const cartItemsForTracking = Object.values(state.cart.contents || {});
-
-    if (typeof loadAndRenderCart === 'function') {
-        loadAndRenderCart();
-    }
-
+    // Emite evento global
     document.dispatchEvent(new CustomEvent('nativa:newOrderPlaced'));
 
     const orderTotal = parseFloat(result.order_total || 0);
@@ -441,14 +435,9 @@ function _handleOrderSubmissionResponse(result) {
     const googleAdsId = trackingData.googleAdsId;
     const googleAdsLabel = trackingData.googleAdsLabel;
 
+    // --- TRACKING ---
     if (orderTotal > 0) {
-        // --- META PIXEL COM DESDUPLICAÇÃO ---
         if (typeof window.fbq === 'function') {
-            console.log('[Pixel] Disparando Purchase com EventID:', {
-                value: orderTotal,
-                order_id: orderId,
-                eventID: orderId.toString(),
-            });
             window.fbq(
                 'track',
                 'Purchase',
@@ -457,70 +446,57 @@ function _handleOrderSubmissionResponse(result) {
                     currency: 'BRL',
                     content_ids: [orderId],
                     content_type: 'product',
-                    num_items: cartItemsForTracking.length,
                 },
                 { eventID: orderId.toString() }
             );
         }
 
-        // --- GOOGLE ADS CONVERSION ---
-        if (
-            typeof window.gtag === 'function' &&
-            googleAdsId &&
-            googleAdsLabel
-        ) {
-            const sendTo = `${googleAdsId}/${googleAdsLabel}`;
-            console.log('[Google Ads] Disparando Conversão:', {
-                send_to: sendTo,
-                value: orderTotal,
-                transaction_id: orderId,
-            });
-            window.gtag('event', 'conversion', {
-                send_to: sendTo,
-                value: orderTotal,
-                currency: 'BRL',
-                transaction_id: orderId,
-            });
-        }
-
-        // --- GA4 PURCHASE EVENT (NOVO) ---
         if (typeof window.gtag === 'function') {
-            const ga4Items = cartItemsForTracking.map((item) => ({
-                item_id: item.id || item.product_id, // Fallback para product_id se id do item não existir
-                item_name: item.name || item.product_name,
-                price: item.price || item.total_item_price,
-                quantity: item.quantity,
-            }));
-
-            console.log('[GA4] Disparando Purchase:', {
-                transaction_id: orderId,
-                value: orderTotal,
-                currency: 'BRL',
-                items: ga4Items,
-            });
-
+            if (googleAdsId && googleAdsLabel) {
+                const sendTo = `${googleAdsId}/${googleAdsLabel}`;
+                window.gtag('event', 'conversion', {
+                    send_to: sendTo,
+                    value: orderTotal,
+                    currency: 'BRL',
+                    transaction_id: orderId,
+                });
+            }
             window.gtag('event', 'purchase', {
                 transaction_id: orderId,
                 value: orderTotal,
                 currency: 'BRL',
                 tax: 0,
                 shipping: state.deliveryFee || 0,
-                items: ga4Items,
             });
-        } else {
-            console.log('[GA4/Ads] Tag Global (gtag) não encontrada.');
         }
     }
 
-    switch (result.action) {
-        case 'redirect_to_payment':
-            window.location.href = result.url;
-            break;
-        case 'redirect':
-        default:
-            Router.navigateTo('/minha-conta');
-            break;
+    // --- LÓGICA DE REDIRECIONAMENTO ---
+
+    // 1. Pix Automático
+    if (result.action === 'redirect_to_payment') {
+        window.location.href = result.url;
+        return;
     }
+
+    // 2. Fluxo PDV (Sucesso = Limpar e Fechar)
+    if (window.nativaData?.isPedidosPage) {
+        showToast('Pedido criado com sucesso!', 'success');
+
+        // Limpa o carrinho visualmente
+        if (typeof loadAndRenderCart === 'function') {
+            loadAndRenderCart();
+        }
+
+        // Fecha a Side Sheet
+        if (window.pdvApp?.closeNewOrderSheet) {
+            window.pdvApp.closeNewOrderSheet();
+        }
+        return;
+    }
+
+    // 3. Fluxo Consumer App
+    Router.navigateTo('/minha-conta');
 }
 
 export async function handleFormSubmit(e) {
@@ -530,35 +506,26 @@ export async function handleFormSubmit(e) {
 
     try {
         const isPrerequisitesValid = await _validateCheckoutPrerequisites(form);
-        if (!isPrerequisitesValid) {
-            return;
-        }
+        if (!isPrerequisitesValid) return;
 
         showSpinner(submitButton);
         const payload = _buildOrderPayload(form);
         const result = await submitOrder(payload);
         _handleOrderSubmissionResponse(result);
     } catch (error) {
-        if (error.name === 'APIError') {
-            showToast(error.message, 'error');
-        } else {
-            console.error('Erro inesperado no envio:', error);
-            showToast(
-                'Ocorreu um erro inesperado ao enviar o pedido.',
-                'error'
-            );
-        }
+        console.error('Erro checkout:', error);
+
+        let msg = 'Erro ao enviar pedido.';
+        // Verifica o erro pelo NOME, já que a classe pode não ser a mesma referência
+        if (error.name === 'APIError' && error.message) msg = error.message;
+
+        showToast(msg, 'error');
+    } finally {
         if (submitButton) hideSpinner(submitButton);
     }
 }
 
 export function handleOpenAddressSheet() {
-    const addressButton = document.getElementById(
-        'nativa-checkout-address-action-btn'
-    );
-    if (addressButton) {
-        addressButton.classList.remove('is-error');
-    }
     handleOpenAddressForm('checkout');
 }
 
@@ -570,9 +537,7 @@ export function handleAddressSelection(e) {
         .querySelectorAll('.checkout-address-card')
         .forEach((c) => c.classList.remove('is-selected'));
     const selectedCard = radio.closest('.checkout-address-card');
-    if (selectedCard) {
-        selectedCard.classList.add('is-selected');
-    }
+    if (selectedCard) selectedCard.classList.add('is-selected');
 
     const selectedAddressId = radio.value;
     const selectedAddress = state.user.addresses.find(
@@ -592,15 +557,6 @@ export function handleAddressSelection(e) {
     }
 
     handleRecalculateTotalsAndFrete();
-}
-
-class APIError extends Error {
-    constructor(message, status = null, data = {}) {
-        super(message);
-        this.name = 'APIError';
-        this.status = status;
-        this.data = data;
-    }
 }
 
 export const init = () => {

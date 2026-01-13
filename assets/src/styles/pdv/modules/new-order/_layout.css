@@ -1,0 +1,44 @@
+/* assets/src/styles/pdv/modules/_layout.css */
+
+/* --- SHELL DO PDV (Container Principal) --- */
+.nativa-pdv-shell {
+    display: flex !important; /* Força layout flexível */
+    flex-direction: row !important; /* Força direção LINHA (Sidebar | Conteúdo) */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--md-sys-color-background);
+    position: relative;
+    z-index: 1;
+}
+
+/* --- ÁREA DE CONTEÚDO (Direita) --- */
+.nativa-pdv-content-area {
+    flex: 1; /* Ocupa todo o espaço restante */
+    height: 100%;
+    overflow: hidden; /* Scroll é gerenciado pelas views internas */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+/* --- VIEWS (Telas) --- */
+.pdv-view {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Scroll interno se necessário */
+    display: none; /* Oculto por padrão */
+    flex-direction: column;
+}
+
+.pdv-view.active {
+    display: flex; /* Exibe como flex para preencher altura */
+}
+
+/* Ajuste para telas muito pequenas (Mobile - se um dia precisar) */
+@media (max-width: 768px) {
+    .nativa-pdv-shell {
+        flex-direction: column !important; /* Em celular, empilha */
+    }
+}

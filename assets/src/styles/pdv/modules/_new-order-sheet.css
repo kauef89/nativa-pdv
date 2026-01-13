@@ -1,0 +1,9 @@
+/* assets/src/styles/pdv/modules/_new-order-sheet.css */
+
+@import 'new-order/_layout.css';
+@import 'new-order/_header.css';
+@import 'new-order/_search.css';
+@import 'new-order/_menu.css';
+@import 'new-order/_modals.css';
+@import 'new-order/_cart.css';
+@import 'new-order/_payment.css'; /* <--- ADICIONE ESTA LINHA */

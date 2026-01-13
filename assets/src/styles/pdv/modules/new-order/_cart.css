@@ -1,0 +1,176 @@
+/* assets/src/styles/pdv/modules/new-order/_cart.css */
+
+/* --- Layout da Aba Sacola (Flexbox para preencher altura) --- */
+#tab-cart {
+    overflow: hidden;
+    background: var(--md-sys-color-surface);
+}
+
+/* --- Estados de Visão (Alternância via JS) --- */
+
+/* 1. Visão da Lista (Carrinho) */
+.cart-view-state {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 2. Visão do Checkout (Formulário) */
+.checkout-view-state {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--md-sys-color-surface-container-lowest);
+    overflow: hidden;
+}
+
+/* === ESTILIZAÇÃO DO CARRINHO EMBUTIDO === */
+
+/* Quando o carrinho (que era um modal) é movido para dentro da visão */
+#tab-cart .nativa-side-sheet.is-embedded {
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: flex;
+    flex-direction: column;
+    z-index: 1 !important;
+}
+
+#tab-cart .nativa-side-sheet.is-embedded .nativa-side-sheet-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Esconde header original do carrinho */
+#tab-cart .nativa-side-sheet-header {
+    display: none !important;
+}
+
+/* Corpo da Sacola (Área Rolável) */
+#tab-cart .nativa-cart-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--space-xl);
+    padding-bottom: 20px;
+    display: block;
+}
+
+#tab-cart .nativa-cart-modality-display {
+    display: none !important;
+}
+
+/* Itens da Lista */
+#tab-cart .nativa-cart-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    margin-bottom: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Ações em Linha */
+#tab-cart .nativa-cart-item-actions {
+    display: flex;
+    flex-direction: row !important;
+    gap: 16px !important;
+    margin-top: 6px;
+    justify-content: flex-start;
+}
+
+#tab-cart .nativa-cart-item-action-btn {
+    padding: 0;
+    font-size: 0.85rem;
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+#tab-cart .nativa-cart-item-action-btn:hover {
+    text-decoration: underline;
+}
+
+/* --- Footer Fixo da Lista --- */
+#tab-cart .nativa-cart-footer {
+    flex: 0 0 auto;
+    background: var(--md-sys-color-surface);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 20px var(--space-xl);
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+    position: relative !important;
+    bottom: auto !important;
+}
+
+/* Ajustes no Sumário */
+#tab-cart .nativa-cart-summary {
+    background: var(--md-sys-color-surface);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 15px var(--space-xl) 0 var(--space-xl) !important;
+    margin: 0 !important;
+    gap: 0 !important;
+}
+
+#tab-cart .nativa-cart-summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+#tab-cart .nativa-cart-summary-line.is-total {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--md-sys-color-primary);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#tab-cart #nativa-checkout-button {
+    width: 100%;
+    height: 50px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#tab-cart .nativa-clear-cart-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: var(--md-sys-color-error);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+/* === ESTILOS ESPECÍFICOS DO CHECKOUT NA SIDE SHEET === */
+
+#tab-checkout .checkout-section-card {
+    box-shadow: none;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    margin-bottom: 16px;
+}
+
+/* Botão fixo no final do checkout */
+#tab-checkout .checkout-actions-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--md-sys-color-surface);
+    padding: 16px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    z-index: 10;
+    margin-top: auto;
+}

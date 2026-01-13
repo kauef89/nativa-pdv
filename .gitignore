@@ -3,6 +3,7 @@
 /node_modules
 /package-lock.json
 /composer.lock
+/assets/dist
 
 # Arquivos de sistema e IDE (Lixo)
 .DS_Store

@@ -6,6 +6,8 @@
  * - Base original preservada.
  * - Adicionado Loader de Template para o PDV (com caminho correto em includes/).
  * - Adicionado Mock do Google Auth para evitar tela branca em ambiente de desenvolvimento.
+ * - ATUALIZADO: Injeção de 'root' e 'nonce' para API REST e unificação de window.nativaData.
+ * - NOVO: Uso do ND_Data_Provider no PDV para carregar cardápio e produtos.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once NATIVADELIVERY_PLUGIN_DIR . 'includes/core/class-nd-hours-helper.php';
 require_once NATIVADELIVERY_PLUGIN_DIR . 'includes/core/class-nd-wait-time-helper.php';
+// Garante que o Data Provider esteja carregado
+require_once NATIVADELIVERY_PLUGIN_DIR . 'includes/core/class-nd-data-provider.php';
 
 class ND_Public {
 
@@ -257,6 +261,9 @@ class ND_Public {
         $data_provider = new ND_Data_Provider();
         $data_to_pass = $data_provider->get_data_for_localize();
 
+        $data_to_pass['root'] = esc_url_raw( rest_url() );
+        $data_to_pass['nonce'] = wp_create_nonce( 'wp_rest' );
+
         $spa_routes = ['/', '/cardapio', '/minha-conta', '/login', '/meus-enderecos', '/fidelidade', '/checkout', '/privacidade', '/termos'];
         
         $data_to_pass['spa_routes'] = $spa_routes;
@@ -282,22 +289,24 @@ class ND_Public {
         if ( is_user_logged_in() ) {
             $nonce = wp_create_nonce('nativa_delivery_ajax_nonce');
             $data_to_pass['ajax_nonce'] = $nonce;
-            $data_to_pass['nonce'] = $nonce;
             $data_to_pass['logout_url'] = wp_logout_url(home_url());
         } else {
             $data_to_pass['ajax_nonce'] = '';
-            $data_to_pass['nonce'] = '';
             $data_to_pass['logout_url'] = '';
         }
 
         $script_data = sprintf(
-            'window.nativaDeliveryData = %s;',
+            'window.nativaData = %s; window.nativaDeliveryData = window.nativaData;',
             wp_json_encode( $data_to_pass )
         );
         wp_add_inline_script( $handle, $script_data, 'before' );
     }
 
     private function localize_pedidos_script($handle) {
+        // NOVO: Carrega os dados "Core" (Cardápio, configurações, etc) usando o Data Provider
+        $data_provider = new ND_Data_Provider();
+        $core_data = $data_provider->get_data_for_localize();
+
         $payment_options = get_option('nativa_delivery_payments_options', []);
         $cep_cidade = get_option('nd_cep_cidade', '89247-000');
         $google_maps_key = defined('NATIVA_GOOGLE_MAPS_API_KEY') ? NATIVA_GOOGLE_MAPS_API_KEY : get_option('nd_google_maps_api_key', '');
@@ -305,8 +314,10 @@ class ND_Public {
         // Obtém URL de login correta
         $login_url = wp_login_url( home_url('/pdv/') );
 
-        $data_to_pass = array(
-            'ajax_url' => admin_url('admin-ajax.php'),
+        $pdv_specific_data = array(
+            'root'       => esc_url_raw( rest_url() ),
+            'nonce'      => wp_create_nonce( 'wp_rest' ), // Rest Nonce tem prioridade sobre Ajax Nonce do Core
+            'ajax_url'   => admin_url('admin-ajax.php'),
             'ajax_nonce' => wp_create_nonce('nativa_delivery_ajax_nonce'),
             'cep_cidade' => $cep_cidade,
             'payment_options' => [
@@ -322,8 +333,11 @@ class ND_Public {
             'login_url' => $login_url,
         );
 
+        // Mescla: Dados específicos do PDV (ex: nonce REST) sobrescrevem os do Core se houver colisão
+        $data_to_pass = array_merge($core_data, $pdv_specific_data);
+
         $script_data = sprintf(
-            'window.nativaDeliveryData = %s;',
+            'window.nativaData = %s; window.nativaDeliveryData = window.nativaData;',
             wp_json_encode( $data_to_pass )
         );
         

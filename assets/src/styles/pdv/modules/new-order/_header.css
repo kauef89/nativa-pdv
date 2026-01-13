@@ -1,0 +1,85 @@
+/* assets/src/styles/pdv/modules/new-order/_header.css */
+
+/* --- Header Principal --- */
+.sheet-header {
+    flex-shrink: 0;
+    padding: var(--space-xl);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--md-sys-color-surface-container);
+}
+
+.sheet-header h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
+.sheet-close-btn {
+    background: none;
+    border: none;
+    font-size: var(--icon-size-md);
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: color 0.2s;
+}
+
+.sheet-close-btn:hover {
+    color: var(--md-sys-color-primary);
+}
+
+/* --- Mini App Header (Cliente Selecionado) --- */
+.mini-app-header {
+    flex-shrink: 0;
+    padding: var(--space-lg) var(--space-xl) var(--space-sm) var(--space-xl);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface);
+    z-index: 10;
+}
+
+.mini-app-header small {
+    color: var(--md-sys-color-on-surface-variant);
+}
+.mini-app-header span#selected-client-name {
+    color: var(--md-sys-color-primary);
+}
+
+/* --- Abas de Navegação --- */
+.pdv-mini-tabs {
+    flex-shrink: 0;
+    display: flex;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    padding: 0 var(--space-xl);
+    background: var(--md-sys-color-surface);
+    z-index: 10;
+    margin-bottom: 0;
+}
+
+.pdv-tab-btn {
+    flex: 1;
+    padding: var(--space-md);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+    color: var(--md-sys-color-on-surface-variant);
+    transition: all 0.2s;
+    font-family: var(--font-family-primary);
+    text-transform: uppercase;
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.5px;
+}
+
+.pdv-tab-btn.active {
+    color: var(--md-sys-color-primary);
+    border-bottom-color: var(--md-sys-color-primary);
+}
+
+.pdv-tab-btn:hover:not(.active) {
+    background: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface);
+}

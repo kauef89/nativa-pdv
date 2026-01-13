@@ -1,143 +1,105 @@
-/* assets/src/styles/pdv/modules/_layout.css */
+/* assets/src/styles/pdv/modules/new-order/_layout.css */
 
-/* --- SHELL GLOBAL DO PDV --- */
-.nativa-pdv-body {
-    background-color: var(--md-sys-color-background);
-    height: 100vh;
-    overflow: hidden; /* Comportamento de App */
-    margin: 0;
-    font-family: var(--font-family-primary);
+/* --- Overlay Global --- */
+.pdv-side-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.pdv-side-sheet-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Container Principal --- */
+.pdv-side-sheet {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    z-index: 9999;
+    box-shadow: var(--md-sys-elevation-3);
+    transition: right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    /* Cria um novo contexto de empilhamento para os filhos absolutos (modais) */
+    transform: translate3d(0, 0, 0);
+}
+
+.pdv-side-sheet.is-open {
+    right: 0;
+}
+
+/* --- Corpo --- */
+.sheet-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    background: var(--md-sys-color-surface);
+    position: relative;
+    min-height: 0;
+}
+
+/* --- Controle de Steps --- */
+.pdv-step {
+    display: none !important;
+    height: 100%;
+    overflow: hidden;
+}
+
+.pdv-step.active {
+    display: flex !important;
+    flex-direction: column;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* --- Conteúdo das Abas --- */
+#pdv-tab-content {
+    flex: 1;
+    /* CRUCIAL: Remove scroll global para permitir que o #tab-cart tenha footer fixo */
+    overflow: hidden;
+    /* CRUCIAL: Remove padding global (o padding é aplicado individualmente nas abas que precisam) */
+    padding: 0;
+    position: relative;
     display: flex;
     flex-direction: column;
 }
 
-/* Grid Principal: Menu Lateral | Área de Conteúdo */
-.nativa-pdv-shell {
-    display: flex;
+.pdv-tab-pane {
+    display: none;
     height: 100%;
     width: 100%;
 }
 
-/* Área de Conteúdo (Direita) */
-.nativa-pdv-content-area {
-    flex: 1;
-    background-color: var(--md-sys-color-surface);
-    position: relative;
-    overflow: hidden;
-    display: flex;
+.pdv-tab-pane.active {
+    display: flex; /* Flex para permitir layout interno (scroll vs fixo) */
     flex-direction: column;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
-/* Views (Abas) */
-.pdv-view {
-    position: absolute;
-    inset: 0;
-    display: none; /* Oculto por padrão */
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    background-color: var(--md-sys-color-surface);
-    overflow: hidden; /* O scroll deve ser interno de cada componente */
-}
-
-.pdv-view.active {
-    display: block;
-    opacity: 1;
-    z-index: 1;
-}
-
-/* Placeholder para abas vazias */
-.view-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-/* --- MODAIS CENTRAIS (Exclusivos do PDV) --- */
-.nativa-center-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* Controle de Visibilidade */
-    opacity: 0;
-    visibility: hidden;
-    transition:
-        opacity 0.2s ease,
-        visibility 0s 0.2s;
-}
-
-.nativa-center-modal-overlay.is-visible {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
-}
-
-.nativa-center-modal {
-    background-color: var(--md-sys-color-surface);
-    width: 90%;
-    max-width: 500px;
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--md-sys-elevation-5);
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    transform: scale(0.95);
-    transition: transform 0.2s ease;
-    border: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.nativa-center-modal.is-large {
-    max-width: 900px;
-}
-
-.nativa-center-modal-overlay.is-visible .nativa-center-modal {
-    transform: scale(1);
-}
-
-.nativa-modal-header {
-    padding: var(--space-md) var(--space-lg);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--md-sys-color-surface-container-low);
-    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
-}
-
-.nativa-modal-header h3 {
-    margin: 0;
-    font-size: var(--font-size-xl);
-    color: var(--md-sys-color-on-surface);
-}
-
-.nativa-modal-body {
-    padding: var(--space-lg);
-    overflow-y: auto;
-    flex: 1;
-}
-
-.nativa-icon-button {
-    background: none;
-    border: none;
-    color: var(--md-sys-color-on-surface-variant);
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-
-.nativa-icon-button:hover {
-    background-color: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface);
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

@@ -1,17 +1,41 @@
 /* assets/src/styles/pdv/main.css */
 
-/* 1. Shared (Correção: ../ em vez de ../../) */
+/* 1. Shared (Variáveis e Base) */
 @import '../_shared/_variables.css';
 @import '../_shared/_base.css';
 @import '../_shared/_forms.css';
 @import '../_shared/_app-components.css';
 
-/* 2. Estrutura do PDV */
+/* 2. Consumer App Styles (IMPORTANTE: Traz o estilo base dos componentes compartilhados) */
+/* Sem isso, botões, inputs e cards podem ficar "quebrados" */
+@import '../consumer/modules/_product-sheet.css';
+@import '../consumer/modules/_cardapio-combos.css';
+@import '../consumer/modules/_cart-sheet.css';
+@import '../consumer/modules/_cart-reward-banner.css';
+@import '../consumer/modules/_checkout-page.css';
+@import '../consumer/modules/_address-wizard.css';
+@import '../consumer/modules/_combo-wizard-sheet.css';
+@import '../consumer/modules/_offer-sheet.css';
+@import '../consumer/modules/_onboarding-wizard.css';
+@import '../consumer/modules/_pix-payment-page.css';
+@import '../consumer/modules/_reorder-sheet.css';
+
+/* 3. Estrutura do PDV (Dashboard e Sidebar) */
 @import 'modules/_layout.css';
 @import 'modules/_navbar.css';
 
-/* 3. Views Específicas */
+/* 4. Side Sheet / Novo Pedido (AQUI ESTÁ O QUE FALTAVA) */
+/* Este arquivo carrega toda a pasta 'new-order/' que criamos */
+@import 'modules/_new-order-sheet.css';
+
+/* 5. Views Específicas */
 @import 'modules/_dashboard.css';
 
-/* 4. Funcionalidades Extras */
+/* 6. Funcionalidades Extras */
 @import 'modules/_print.css';
+
+/* 7. Overrides Finais */
+/* Garante que a barra de navegação do App não apareça no PDV */
+#nativa-bottom-navbar {
+    display: none !important;
+}

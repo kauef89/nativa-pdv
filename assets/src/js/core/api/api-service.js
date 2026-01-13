@@ -2,10 +2,7 @@
 
 /**
  * Módulo para lidar com todas as chamadas de API do aplicativo Nativa Delivery.
- * ATUALIZADO: Melhora o tratamento de erros para extrair mensagens mais específicas
- * da resposta da API, fornecendo feedback mais útil ao usuário.
- * ATUALIZAÇÃO (GOV.BR): Função 'fetchCpfData' padronizada.
- * ATUALIZAÇÃO (PUSH PIX): Adiciona o endpoint 'sendPixExpirationWarning'.
+ * ATUALIZADO: Correção de Linter (variável 'e' não utilizada) e inclusão de getAddressesByUserId.
  */
 
 import { ajaxUrl, ajaxNonce } from './config.js';
@@ -24,11 +21,6 @@ class APIError extends Error {
 
 /**
  * Função unificada para realizar todas as chamadas AJAX ao backend.
- * Lida com chamadas públicas e privadas (autenticadas com nonce).
- * @param {string} action O nome da ação AJAX.
- * @param {object} data Os dados a serem enviados.
- * @param {boolean} isPrivate Se a chamada requer autenticação (nonce).
- * @returns {Promise<object>} A promessa com a resposta da API.
  */
 const _makeAjaxCall = (action, data = {}, isPrivate = false) => {
     const formData = new FormData();
@@ -77,7 +69,8 @@ const _makeAjaxCall = (action, data = {}, isPrivate = false) => {
                         response.status,
                         errorJson.data
                     );
-                } catch (e) {
+                } catch {
+                    // CORREÇÃO: Removido '(e)' pois não é utilizado (Optional Catch Binding)
                     const cleanText = errorText
                         .replace(/<[^>]*>/g, ' ')
                         .replace(/\s+/g, ' ')
@@ -161,10 +154,7 @@ export const getCartContents = () =>
     _makeAjaxCall('get_cart_contents', {}, false);
 
 export const addToCart = (productData) => {
-    // Verifica se o item é um resgate de recompensa
     const isReward = productData.is_reward || false;
-    // Se for recompensa, a chamada DEVE ser privada (requer nonce)
-    // Se não for, pode ser pública (convidado pode adicionar ao carrinho)
     return _makeAjaxCall('add_to_cart', productData, isReward);
 };
 
@@ -242,6 +232,10 @@ export const savePushSubscription = (subscription) =>
 export const sendPixExpirationWarning = (orderId) =>
     _makeAjaxCall('send_pix_expiration_warning', { order_id: orderId }, true);
 
-// --- NOVA FUNÇÃO PADRONIZADA: Consulta CPF (Gov.br) ---
+// --- Consultas Específicas ---
 export const fetchCpfData = (cpf) =>
     _makeAjaxCall('fetch_cpf_data', { cpf: cpf }, true);
+
+// NOVO: Busca endereços de um cliente específico (para uso no PDV)
+export const getAddressesByUserId = (userId) =>
+    _makeAjaxCall('get_customer_addresses', { user_id: userId }, true);
