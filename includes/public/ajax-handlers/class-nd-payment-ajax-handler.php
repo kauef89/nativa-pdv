@@ -1,13 +1,10 @@
 <?php
 /**
  * Lida com as requisições AJAX relacionadas a pagamentos de pedidos.
- * ... (histórico de versões anterior) ...
- * CORREÇÃO (DASHBOARD REALTIME): Força a atualização da data de modificação do post ao confirmar pagamento via polling.
+ * VERSÃO 4.0 (SQL MIGRATION): Leitura e Escrita nas tabelas de pagamento SQL.
  */
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
 
 if ( file_exists( NATIVADELIVERY_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
     require_once NATIVADELIVERY_PLUGIN_DIR . 'vendor/autoload.php';
@@ -23,216 +20,96 @@ require_once NATIVADELIVERY_PLUGIN_DIR . 'includes/core/class-nd-sicredi-helper.
 
 class ND_Payment_Ajax_Handler
 {
+    private $wpdb;
+
     public function __construct()
     {
+        global $wpdb;
+        $this->wpdb = $wpdb;
+
         $actions = [
             'get_pix_data', 'check_pix_status',
             'update_payment_status',
             'recognize_payment', 'update_payment_refund_status',
-            'expire_pix_order',
-            'send_pix_expiration_warning',
+            'expire_pix_order', 'send_pix_expiration_warning',
         ];
 
         foreach ($actions as $action) {
             add_action("wp_ajax_nativa_delivery_{$action}", array($this, "{$action}_ajax"));
-
-            $public_actions = [
-                'get_pix_data', 'check_pix_status',
-            ];
-
+            $public_actions = ['get_pix_data', 'check_pix_status'];
             if (in_array($action, $public_actions)) {
                 add_action("wp_ajax_nopriv_nativa_delivery_{$action}", array($this, "{$action}_ajax"));
             }
         }
     }
 
-    public function update_payment_refund_status_ajax()
-    {
-        check_ajax_referer('nativa_delivery_ajax_nonce', 'nativa_delivery_nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Acesso negado.'], 403);
-        }
-        $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
-        $new_state = isset($_POST['new_state']) ? filter_var($_POST['new_state'], FILTER_VALIDATE_BOOLEAN) : false; // true = estornado, false = desfazer estorno
-        if (!$order_id) {
-            wp_send_json_error(['message' => 'ID do pedido não informado.']);
-        }
-
-        $new_payment_status = $new_state ? 'refunded' : 'paid';
-        update_post_meta($order_id, '_payment_status', $new_payment_status);
-        update_post_meta($order_id, '_payment_refunded', $new_state);
-        
-        // CORREÇÃO REALTIME (Opcional, mas boa prática para estornos)
-        wp_update_post(['ID' => $order_id]);
-
-        wp_send_json_success(['message' => 'Status do estorno atualizado.']);
-    }
-
-    public function recognize_payment_ajax()
-    {
-        check_ajax_referer('nativa_delivery_ajax_nonce', 'nativa_delivery_nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Acesso negado.'], 403);
-        }
-        $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
-        if (!$order_id) {
-            wp_send_json_error(['message' => 'ID do pedido não informado.']);
-        }
-
-        update_post_meta($order_id, '_payment_status', 'paid');
-        update_post_meta($order_id, '_payment_received', true);
-
-        $current_method = get_field('pedido_metodo_pagamento', $order_id);
-        if ($current_method === 'pix-sicredi' || $current_method === 'pix-fallback') {
-            update_field('pedido_metodo_pagamento', 'pix-fallback', $order_id);
-        }
-
-        wp_set_object_terms($order_id, 'recebido', 'nativa_order_status');
-        
-        $status_log = get_post_meta($order_id, 'status_log', true);
-        if (!is_array($status_log)) { $status_log = []; }
-        $status_log[] = [
-            'status'     => 'recebido',
-            'timestamp'  => current_time('timestamp', true),
-            'changed_by' => 'admin (' . wp_get_current_user()->user_login . ')',
-            'reason'     => 'Pagamento reconhecido manually'
-        ];
-        update_post_meta($order_id, 'status_log', $status_log);
-        
-        // CORREÇÃO REALTIME
-        wp_update_post(['ID' => $order_id]);
-
-        wp_send_json_success(['message' => 'Pagamento reconhecido e pedido movido para "Recebido".']);
-    }
-
-    public function update_payment_status_ajax()
-    {
-        check_ajax_referer('nativa_delivery_ajax_nonce', 'nativa_delivery_nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Acesso negado.'], 403);
-        }
-        $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
-        $new_state = isset($_POST['new_state']) ? filter_var($_POST['new_state'], FILTER_VALIDATE_BOOLEAN) : false;
-        if (!$order_id) {
-            wp_send_json_error(['message' => 'ID do pedido não informado.']);
-        }
-
-        $new_payment_status = $new_state ? 'paid' : 'manual_pending';
-        update_post_meta($order_id, '_payment_status', $new_payment_status);
-        update_post_meta($order_id, '_payment_received', $new_state);
-        
-        // CORREÇÃO REALTIME
-        wp_update_post(['ID' => $order_id]);
-
-        wp_send_json_success(['message' => 'Status do pagamento atualizado.']);
-    }
-
-    public function get_pix_data_ajax()
-    {
-        check_ajax_referer('nativa_delivery_ajax_nonce', 'nonce');
-        $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
-        if (!$order_id) {
-            wp_send_json_error(['message' => 'ID do pedido inválido.']);
-            return;
-        }
-
-        $sicredi_pix_data = get_post_meta($order_id, 'sicredi_pix_data', true);
-
-        if (!empty($sicredi_pix_data) && is_array($sicredi_pix_data)) {
-            $qr_code_data_uri = null;
-            $qr_code_error = null;
-            $copia_e_cola = $sicredi_pix_data['pixCopiaECola'] ?? '';
-
-            if (empty($copia_e_cola)) {
-                wp_send_json_error(['message' => 'Código Copia e Cola PIX não encontrado para este pedido.']);
-                return;
-            }
-
-            try {
-                $result = Builder::create()
-                    ->writer(new PngWriter())
-                    ->writerOptions([])
-                    ->data($copia_e_cola)
-                    ->encoding(new Encoding('UTF-8'))
-                    ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-                    ->size(300)
-                    ->margin(10)
-                    ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
-                    ->validateResult(false)
-                    ->build();
-
-                $qr_code_data_uri = $result->getDataUri();
-
-            } catch (\Exception $e) {
-                $qr_code_error = 'Falha ao gerar QR Code: ' . $e->getMessage();
-                error_log("Nativa Delivery - Falha ao gerar QR Code para pedido $order_id: " . $e->getMessage());
-            }
-
-            wp_send_json_success([
-                'qr_code_base64' => $qr_code_data_uri,
-                'copia_e_cola' => $copia_e_cola,
-                'qr_code_error' => $qr_code_error,
-                'qr_code_type' => 'png'
-            ]);
-
-        } else {
-            wp_send_json_error(['message' => 'Não foi possível encontrar os dados de pagamento PIX para este pedido.']);
-        }
-    }
+    // --- MÉTODOS DE AUDITORIA PIX ---
 
     public function check_pix_status_ajax()
     {
+        // Usado tanto pelo App do Cliente quanto pelo Botão "Verificar" do PDV
         check_ajax_referer('nativa_delivery_ajax_nonce', 'nonce');
         $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
 
         if (!$order_id) {
-            wp_send_json_error(['paid' => false, 'message' => 'ID do pedido não fornecido.']);
-            return;
+            wp_send_json_error(['paid' => false, 'message' => 'ID inválido.']); return;
         }
 
-        $txid = get_post_meta($order_id, '_sicredi_pix_txid', true);
+        // 1. Busca dados do pagamento na tabela SQL
+        $table_pag = $this->wpdb->prefix . 'nativa_pdv_pagamentos';
+        $payment_row = $this->wpdb->get_row( $this->wpdb->prepare(
+            "SELECT * FROM $table_pag WHERE pedido_id = %d AND metodo_pagamento LIKE %s LIMIT 1",
+            $order_id, '%pix%'
+        ));
+
+        if (!$payment_row) {
+            wp_send_json_error(['paid' => false, 'message' => 'Pagamento PIX não encontrado.']); return;
+        }
+
+        // Se já está pago no banco, retorna sucesso direto
+        if ($payment_row->status === 'aprovado') {
+            wp_send_json_success(['paid' => true]); return;
+        }
+
+        // 2. Extrai TXID do JSON
+        $gateway_data = json_decode($payment_row->gateway_data, true);
+        $txid = $gateway_data['txid'] ?? '';
 
         if (empty($txid)) {
-            $payment_status_meta = get_post_meta($order_id, '_payment_status', true);
-            if ($payment_status_meta === 'paid') {
-                wp_send_json_success(['paid' => true]);
-                return;
-            }
-            wp_send_json_error(['paid' => false, 'message' => 'FALHA DE POLLING: ID da transação PIX (txid) não encontrado para o pedido #' . $order_id]);
-            return;
+            wp_send_json_error(['paid' => false, 'message' => 'TXID não gerado.']); return;
         }
 
+        // 3. Consulta API Sicredi (Auditoria Real)
         $sicredi_response = ND_Sicredi_Helper::get_pix_charge($txid);
 
         if (is_wp_error($sicredi_response)) {
-            error_log('Erro ao consultar status PIX no Sicredi para o pedido #' . $order_id . ': ' . $sicredi_response->get_error_message());
-            wp_send_json_success(['paid' => false]);
-            return;
+            wp_send_json_success(['paid' => false, 'error' => 'Falha na comunicação com Sicredi.']); return;
         }
 
         if (isset($sicredi_response['status']) && $sicredi_response['status'] === 'CONCLUIDA') {
-            update_post_meta($order_id, '_payment_status', 'paid');
-            update_post_meta($order_id, '_payment_received', true);
+            // 4. Atualiza Tabela de Pagamentos
+            $this->wpdb->update(
+                $table_pag,
+                ['status' => 'aprovado', 'data_pagamento' => current_time('mysql')],
+                ['id' => $payment_row->id]
+            );
 
-            wp_set_object_terms($order_id, 'recebido', 'nativa_order_status', false);
+            // 5. Atualiza Pedido para 'Recebido' (se estava aguardando)
+            $table_ped = $this->wpdb->prefix . 'nativa_pdv_pedidos';
+            $this->wpdb->update(
+                $table_ped,
+                ['status' => 'recebido'],
+                ['id' => $order_id]
+            );
 
-            $status_log = get_post_meta($order_id, 'status_log', true) ?: [];
-
-            $order_total = get_field('pedido_total_final', $order_id);
-            $status_log[] = [
-                'status' => 'recebido',
-                'timestamp' => current_time( 'timestamp', true ),
-                'changed_by' => 'system (pix api)',
-                'payment_info' => [
-                    'amount' => $order_total,
-                    'method' => 'PIX Sicredi (API)'
-                ]
-            ];
-            update_post_meta($order_id, 'status_log', $status_log);
-            
-            // --- CORREÇÃO REALTIME ---
-            // Força atualização da data de modificação para o Dashboard perceber
-            wp_update_post(['ID' => $order_id]);
+            // 6. Log e Automação
+            if (class_exists('ND_Automations')) {
+                $automations = new ND_Automations();
+                $automations->handle_status_change($order_id, 'recebido');
+                // Credita pontos agora que confirmou!
+                $order = $this->wpdb->get_row("SELECT * FROM $table_ped WHERE id = $order_id");
+                $this->credit_loyalty_points_delayed($order);
+            }
 
             wp_send_json_success(['paid' => true]);
         } else {
@@ -240,90 +117,113 @@ class ND_Payment_Ajax_Handler
         }
     }
 
-    public function expire_pix_order_ajax()
+    public function get_pix_data_ajax()
     {
         check_ajax_referer('nativa_delivery_ajax_nonce', 'nonce');
         $order_id = isset($_POST['order_id']) ? absint($_POST['order_id']) : 0;
 
-        if (!$order_id) {
-            wp_send_json_error(['message' => 'ID do pedido não fornecido.']);
-        }
+        $table_pag = $this->wpdb->prefix . 'nativa_pdv_pagamentos';
+        $payment_row = $this->wpdb->get_row( $this->wpdb->prepare(
+            "SELECT gateway_data FROM $table_pag WHERE pedido_id = %d AND metodo_pagamento LIKE %s LIMIT 1",
+            $order_id, '%pix%'
+        ));
 
-        $customer_user_id = get_post_meta($order_id, '_customer_user', true);
-        if ( is_user_logged_in() && get_current_user_id() != $customer_user_id ) {
-            wp_send_json_error(['message' => 'Acesso não autorizado.'], 403);
-        }
+        if (!$payment_row) { wp_send_json_error(['message' => 'Sem dados PIX.']); return; }
 
-        $payment_method = get_field('pedido_metodo_pagamento', $order_id);
-        $payment_status = get_post_meta($order_id, '_payment_status', true);
+        $data = json_decode($payment_row->gateway_data, true);
+        $copia_e_cola = $data['qr_code'] ?? ''; // Nome do campo salvo no sicredi-helper
 
-        if ($payment_method === 'pix-sicredi' && $payment_status === 'awaiting_api') {
-            update_post_meta($order_id, '_payment_status', 'expired');
-            wp_set_object_terms($order_id, 'cancelado', 'nativa_order_status');
+        if (empty($copia_e_cola)) { wp_send_json_error(['message' => 'QR Code não disponível.']); return; }
 
-            $status_log = get_post_meta($order_id, 'status_log', true) ?: [];
-            $status_log[] = [
-                'status'    => 'cancelado',
-                'timestamp' => current_time('timestamp', true),
-                'changed_by'=> 'system (pix expiry)',
-                'reason'    => 'Pagamento PIX expirado.'
-            ];
-            update_post_meta($order_id, 'status_log', $status_log);
+        try {
+            $result = Builder::create()
+                ->writer(new PngWriter())
+                ->data($copia_e_cola)
+                ->encoding(new Encoding('UTF-8'))
+                ->errorCorrectionLevel(ErrorCorrectionLevel::High)
+                ->size(300)
+                ->margin(10)
+                ->build();
             
-            // CORREÇÃO REALTIME
-            wp_update_post(['ID' => $order_id]);
-
-            wp_send_json_success(['message' => 'Pedido expirado e cancelado.']);
-        } else {
-            wp_send_json_error(['message' => 'O pedido não pôde ser cancelado (já pago, expirado ou método inválido).'], 400);
+            wp_send_json_success([
+                'qr_code_base64' => $result->getDataUri(),
+                'copia_e_cola' => $copia_e_cola,
+                'qr_code_type' => 'png'
+            ]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'Erro ao gerar imagem QR.']);
         }
     }
 
-    public function send_pix_expiration_warning_ajax() {
-        check_ajax_referer('nativa_delivery_ajax_nonce', 'nonce');
+    // --- MÉTODOS DE GESTÃO MANUAL (PDV) ---
+
+    public function recognize_payment_ajax()
+    {
+        // Botão "Marcar como Pago" no PDV
+        check_ajax_referer('nativa_delivery_ajax_nonce', 'nativa_delivery_nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => '403'], 403);
+
+        $order_id = absint($_POST['order_id']);
         
-        if ( ! is_user_logged_in() ) {
-            wp_send_json_error( array( 'message' => 'Usuário não logado.' ), 403 );
-            return;
+        // Aprova todos os pagamentos pendentes deste pedido
+        $table_pag = $this->wpdb->prefix . 'nativa_pdv_pagamentos';
+        $this->wpdb->query( $this->wpdb->prepare(
+            "UPDATE $table_pag SET status = 'aprovado', data_pagamento = %s WHERE pedido_id = %d AND status = 'pendente'",
+            current_time('mysql'), $order_id
+        ));
+
+        // Move pedido para recebido
+        $table_ped = $this->wpdb->prefix . 'nativa_pdv_pedidos';
+        $this->wpdb->update($table_ped, ['status' => 'recebido'], ['id' => $order_id]);
+
+        // Automação (Pontos, Push)
+        if (class_exists('ND_Automations')) {
+            $automations = new ND_Automations();
+            $automations->handle_status_change($order_id, 'recebido');
+            
+            $order = $this->wpdb->get_row("SELECT * FROM $table_ped WHERE id = $order_id");
+            $this->credit_loyalty_points_delayed($order);
         }
 
-        $order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
-        if ( ! $order_id ) {
-            wp_send_json_error( array( 'message' => 'ID do pedido inválido.' ), 400 );
-            return;
-        }
+        wp_send_json_success(['message' => 'Pagamento confirmado manualmente.']);
+    }
 
-        $current_user_id = get_current_user_id();
-        $order_user_id = get_post_meta( $order_id, '_customer_user', true );
-
-        if ( $current_user_id != $order_user_id ) {
-            wp_send_json_error( array( 'message' => 'Não autorizado.' ), 403 );
-            return;
-        }
-
-        $status_terms = get_the_terms( $order_id, 'nativa_order_status' );
-        $current_status = !empty($status_terms) && !is_wp_error($status_terms) ? $status_terms[0]->slug : '';
+    // --- HELPER FIDELIDADE (Para usar na confirmação tardia) ---
+    private function credit_loyalty_points_delayed($order) {
+        $meta = json_decode($order->metadados_json, true);
         
-        if ( $current_status !== 'aguardando-pagamento' ) {
-            wp_send_json_error( array( 'message' => 'O pedido não está mais aguardando pagamento.' ), 400 );
-            return;
-        }
+        // Verifica se já ganhou
+        if (!empty($meta['loyalty_awarded'])) return;
 
-        if ( ! class_exists('ND_Automations') ) {
-             require_once NATIVADELIVERY_PLUGIN_DIR . 'includes/core/class-nd-automations.php';
-        }
-        $automations = new ND_Automations();
+        // Recupera pontos calculados na criação
+        $points_to_award = $meta['points_earned'] ?? 0;
+        if ($points_to_award <= 0) return;
 
-        $payload = [
-            'title' => 'Seu PIX vai expirar!',
-            'body'  => "O pagamento do seu pedido #${order_id} expira em 1 minuto. Corra para não perdê-lo!",
-            'icon'  => NATIVADELIVERY_PLUGIN_URL . 'assets/icons/android-chrome-192x192.png',
-            'url'   => home_url('/minha-conta'),
-            'isUrgent' => true,
-        ];
+        $user_id = $order->cliente_id;
+        if (!$user_id) return;
 
-        $automations->send_custom_push_to_user($current_user_id, $payload);
+        // Credita
+        $current = (int) get_user_meta($user_id, 'nativa_user_points', true);
+        $new_balance = $current + $points_to_award;
+        update_user_meta($user_id, 'nativa_user_points', $new_balance);
 
-        wp_send_json_success( array( 'message' => 'Notificação de lembrete enviada.' ) );
+        // Loga
+        $table_mov = $this->wpdb->prefix . 'nativa_fidelidade_movimentos';
+        $this->wpdb->insert($table_mov, [
+            'cliente_id' => $user_id,
+            'tipo' => 'ganho',
+            'pontos' => $points_to_award,
+            'referencia_id' => $order->id,
+            'descricao' => "Ganho por Pedido #{$order->id} (Confirmado)",
+            'saldo_apos_movimento' => $new_balance
+        ]);
+
+        // Marca como creditado
+        $meta['loyalty_awarded'] = true;
+        $this->wpdb->update(
+            $this->wpdb->prefix . 'nativa_pdv_pedidos',
+            ['metadados_json' => json_encode($meta, JSON_UNESCAPED_UNICODE)],
+            ['id' => $order->id]
+        );
     }
 }

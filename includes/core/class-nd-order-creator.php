@@ -1,7 +1,7 @@
 <?php
 /**
  * Classe responsável pela lógica de criação de pedidos.
- * VERSÃO 5.7 (FINAL FIX): Hidratação de nomes forçada em todos os fluxos (Sessão/API).
+ * VERSÃO 5.9 (LOYALTY DEFER): Calcula pontos mas adia o crédito para o status 'finalizado'.
  */
 
 if (!defined('ABSPATH')) { exit; }
@@ -100,7 +100,7 @@ class ND_Order_Creator
         ['id' => $order_id]
     );
 
-    // Automações
+    // Automações (Push)
     if ($status_final === 'recebido' && class_exists('ND_Automations')) {
         $automations = new ND_Automations();
         $automations->handle_status_change($order_id, 'recebido');
@@ -111,13 +111,15 @@ class ND_Order_Creator
         );
     }
 
-    // 7. Finalização
+    // 7. Fidelidade (Apenas Cálculo e Registro de Potencial)
+    // MUDANÇA: Não credita mais aqui. Apenas salva o valor que SERÁ ganho.
     $points_earned = $this->_calculate_loyalty_points();
     if ($points_earned > 0 && is_user_logged_in()) {
-        $user_id = get_current_user_id();
-        $current_points = (int) get_user_meta($user_id, 'nativa_user_points', true);
-        update_user_meta($user_id, 'nativa_user_points', $current_points + $points_earned);
-        $this->update_order_metadata($order_id, 'points_awarded', $points_earned);
+        // Salvamos 'points_earned' no metadata.
+        // O ND_Automations lerá este valor quando o status virar 'finalizado'.
+        $this->update_order_metadata($order_id, 'points_earned', $points_earned);
+        
+        // Removemos a flag 'loyalty_awarded' daqui, pois não foi awarded ainda.
     }
 
     if ($secure_discount > 0) {
@@ -129,7 +131,7 @@ class ND_Order_Creator
     }
 
     if (is_array($payment_result)) {
-      $payment_result['points_earned'] = $points_earned;
+      $payment_result['points_earned'] = $points_earned; // Apenas informativo para o frontend
       $payment_result['order_total'] = $this->data['totals']['final_total'];
       $payment_result['order_id'] = $order_id;
     }
@@ -147,15 +149,25 @@ class ND_Order_Creator
           $prod_id = $item['id'] ?? $item['product_id'] ?? null;
           if (!$prod_id) continue;
 
-          // Processamento básico (a hidratação real agora ocorre no insert_order_items também)
-          $price = isset($item['price']) ? floatval($item['price']) : 0;
+          $item_name = $item['name'] ?? '';
+          if ( empty($item_name) || $item_name === 'Produto' || $item_name === 'Item' ) {
+              $db_title = get_the_title($prod_id);
+              $item_name = $db_title ?: 'Produto #' . $prod_id;
+          }
+
+          $price = 0;
+          if (isset($item['price']) && is_numeric($item['price']) && floatval($item['price']) >= 0) {
+              $price = floatval($item['price']);
+          } else {
+              $price = (float) get_field('produto_preco', $prod_id);
+          }
+
           $qty = max(1, intval($item['qty'] ?? $item['quantity'] ?? 1));
-          
           $total += $price * $qty;
 
           $contents[] = [
               'id' => $prod_id,
-              'name' => $item['name'] ?? '', // Deixa vazio para forçar busca no insert se necessário
+              'name' => $item_name,
               'qty' => $qty,
               'price' => $price,
               'options' => $item['options'] ?? [],
@@ -220,26 +232,17 @@ class ND_Order_Creator
       foreach ($items as $item) {
           $produto_id = $item['id'] ?? $item['product_id'] ?? null;
           
-          if (empty($produto_id)) {
-              return new WP_Error('db_item_error', 'Item inválido: ID do produto ausente.');
-          }
+          if (empty($produto_id)) return new WP_Error('db_item_error', 'Item inválido: ID ausente.');
 
-          // --- CORREÇÃO DE NOME (HIDRATAÇÃO) ---
           $item_name = $item['name'] ?? '';
-          // Se o nome for genérico, vazio ou placeholder, busca no banco
           if ( empty($item_name) || $item_name === 'Produto' || $item_name === 'Item' ) {
               $db_title = get_the_title($produto_id);
-              if ( $db_title ) {
-                  $item_name = $db_title;
-              } else {
-                  $item_name = 'Produto #' . $produto_id;
-              }
+              $item_name = $db_title ?: 'Produto #' . $produto_id;
           }
 
           $qty = isset($item['qty']) ? $item['qty'] : ($item['quantity'] ?? 1);
           $qty = max(1, intval($qty));
 
-          // Normaliza preço
           $price = 0;
           $subtotal = 0;
           if (isset($item['price'])) {
@@ -257,7 +260,7 @@ class ND_Order_Creator
               [
                   'pedido_id'      => $order_id,
                   'produto_id'     => $produto_id, 
-                  'nome_produto'   => substr($item_name, 0, 255), // Nome corrigido
+                  'nome_produto'   => substr($item_name, 0, 255),
                   'quantidade'     => $qty,
                   'preco_unitario' => $price,
                   'subtotal'       => $subtotal,
@@ -267,9 +270,7 @@ class ND_Order_Creator
               ['%d', '%d', '%s', '%d', '%f', '%f', '%s', '%s']
           );
 
-          if ($result === false) {
-              return new WP_Error('db_item_error', 'Erro SQL Item: ' . $this->wpdb->last_error);
-          }
+          if ($result === false) return new WP_Error('db_item_error', 'Erro SQL Item: ' . $this->wpdb->last_error);
       }
       return true;
   }
