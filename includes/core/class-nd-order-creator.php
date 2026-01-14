@@ -1,7 +1,7 @@
 <?php
 /**
  * Classe responsável pela lógica de criação de pedidos.
- * VERSÃO 5.9 (LOYALTY DEFER): Calcula pontos mas adia o crédito para o status 'finalizado'.
+ * VERSÃO 6.0 (TIMESTAMP FIX): Usa UNIX Timestamp (UTC) para logs de status.
  */
 
 if (!defined('ABSPATH')) { exit; }
@@ -10,7 +10,7 @@ class ND_Order_Creator
 {
   private $data;
   private $wpdb;
-  private $items_source = 'session'; // 'session' ou 'direct'
+  private $items_source = 'session'; 
 
   public function __construct($checkout_data)
   {
@@ -84,7 +84,7 @@ class ND_Order_Creator
          return $payment_result;
     }
 
-    // --- Status Inicial ---
+    // Status Inicial
     $status_final = 'pendente';
     if ( isset($payment_result['payment_status']) ) {
         if ($payment_result['has_pix_auto']) {
@@ -100,7 +100,7 @@ class ND_Order_Creator
         ['id' => $order_id]
     );
 
-    // Automações (Push)
+    // Automações
     if ($status_final === 'recebido' && class_exists('ND_Automations')) {
         $automations = new ND_Automations();
         $automations->handle_status_change($order_id, 'recebido');
@@ -111,15 +111,10 @@ class ND_Order_Creator
         );
     }
 
-    // 7. Fidelidade (Apenas Cálculo e Registro de Potencial)
-    // MUDANÇA: Não credita mais aqui. Apenas salva o valor que SERÁ ganho.
+    // 7. Finalização (Cálculo de Pontos)
     $points_earned = $this->_calculate_loyalty_points();
     if ($points_earned > 0 && is_user_logged_in()) {
-        // Salvamos 'points_earned' no metadata.
-        // O ND_Automations lerá este valor quando o status virar 'finalizado'.
         $this->update_order_metadata($order_id, 'points_earned', $points_earned);
-        
-        // Removemos a flag 'loyalty_awarded' daqui, pois não foi awarded ainda.
     }
 
     if ($secure_discount > 0) {
@@ -131,7 +126,7 @@ class ND_Order_Creator
     }
 
     if (is_array($payment_result)) {
-      $payment_result['points_earned'] = $points_earned; // Apenas informativo para o frontend
+      $payment_result['points_earned'] = $points_earned;
       $payment_result['order_total'] = $this->data['totals']['final_total'];
       $payment_result['order_id'] = $order_id;
     }
@@ -149,12 +144,9 @@ class ND_Order_Creator
           $prod_id = $item['id'] ?? $item['product_id'] ?? null;
           if (!$prod_id) continue;
 
-          $item_name = $item['name'] ?? '';
-          if ( empty($item_name) || $item_name === 'Produto' || $item_name === 'Item' ) {
-              $db_title = get_the_title($prod_id);
-              $item_name = $db_title ?: 'Produto #' . $prod_id;
-          }
-
+          $db_title = get_the_title($prod_id);
+          $item_name = !empty($db_title) ? $db_title : ($item['name'] ?? 'Produto #' . $prod_id);
+          
           $price = 0;
           if (isset($item['price']) && is_numeric($item['price']) && floatval($item['price']) >= 0) {
               $price = floatval($item['price']);
@@ -202,8 +194,9 @@ class ND_Order_Creator
           ],
           'coupon' => $this->data['applied_coupon_code'] ?? null,
           'order_key' => wp_generate_password(32, false),
+          // --- CORREÇÃO DE TIMESTAMP ---
           'status_log' => [
-              ['status' => 'criado', 'timestamp' => current_time('mysql')]
+              ['status' => 'criado', 'timestamp' => current_time('timestamp', true)] // UTC Timestamp
           ]
       ];
 
@@ -231,7 +224,6 @@ class ND_Order_Creator
       
       foreach ($items as $item) {
           $produto_id = $item['id'] ?? $item['product_id'] ?? null;
-          
           if (empty($produto_id)) return new WP_Error('db_item_error', 'Item inválido: ID ausente.');
 
           $item_name = $item['name'] ?? '';
@@ -344,8 +336,6 @@ class ND_Order_Creator
       ];
   }
 
-  // --- Helpers Auxiliares ---
-
   private function update_order_metadata($order_id, $key, $value) {
       $row = $this->wpdb->get_row("SELECT metadados_json FROM {$this->wpdb->prefix}nativa_pdv_pedidos WHERE id = $order_id");
       if ($row) {
@@ -379,9 +369,7 @@ class ND_Order_Creator
       return round(min($cart_subtotal, $discount_amount), 2);
   }
 
-  private function process_coupon_usage() {
-       // Lógica de update no CPT do Cupom
-  }
+  private function process_coupon_usage() { }
 
   private function _calculate_loyalty_points() {
       $points_per_real = get_field('points_per_real', 'option');

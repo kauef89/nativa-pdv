@@ -1,7 +1,7 @@
 <?php
 /**
  * Gerencia automações e lógicas de negócio baseadas em eventos do sistema.
- * VERSÃO 6.1 (CLEANUP): Remoção de código legado (Nextend) e otimização.
+ * VERSÃO 6.3 (FINAL): Timestamp UNIX, SQL Nativo, Integração Financeira e OneSignal.
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -16,7 +16,7 @@ class ND_Automations {
     global $wpdb;
     $this->wpdb = $wpdb;
 
-    // Configuração OneSignal (Prioriza wp-config.php)
+    // Configuração OneSignal
     if ( defined( 'NATIVA_ONESIGNAL_APP_ID' ) ) {
         $this->app_id = NATIVA_ONESIGNAL_APP_ID;
     } else {
@@ -29,26 +29,22 @@ class ND_Automations {
         $this->rest_key = get_option('nativa_onesignal_rest_key', '');
     }
 
-    // Cron de PIX (Versão SQL)
+    // Cron de PIX
     add_action( 'nativa_delivery_process_pending_pix', array( $this, 'process_pending_pix_orders_sql' ) );
   }
 
-  // --- 1. AUTOMAÇÕES DE STATUS (O CÉREBRO) ---
+  // --- 1. AUTOMAÇÕES DE STATUS (CORE) ---
 
-  /**
-   * Método central disparado quando o status muda (via API ou Painel).
-   */
   public function handle_status_change( $order_id, $new_status_slug ) {
-      // Busca dados do pedido na tabela SQL
       $table = $this->wpdb->prefix . 'nativa_pdv_pedidos';
       $order = $this->wpdb->get_row( $this->wpdb->prepare("SELECT * FROM $table WHERE id = %d", $order_id) );
       
       if ( ! $order ) return;
 
-      // 1. Log de Status (Histórico)
+      // 1. Log de Status (Salva histórico)
       $this->log_status_change_sql( $order, $new_status_slug );
 
-      // 2. GATILHO DE FECHAMENTO (Status 'Finalizado')
+      // 2. Gatilho de Fechamento (Status 'Finalizado')
       if ( $new_status_slug === 'finalizado' ) {
           // A. Processamento Financeiro (Caixa + Fiscal)
           if ( ! class_exists('ND_Financial_Handler') ) {
@@ -72,9 +68,6 @@ class ND_Automations {
 
   // --- 2. FIDELIDADE (SQL AUDITÁVEL) ---
 
-  /**
-   * Credita pontos quando o pedido é finalizado com sucesso.
-   */
   private function process_loyalty_award_sql( $order ) {
       $meta = json_decode($order->metadados_json, true) ?: [];
       
@@ -82,17 +75,17 @@ class ND_Automations {
       if ( !empty($meta['loyalty_awarded']) ) return;
 
       $points_to_award = isset($meta['points_earned']) ? intval($meta['points_earned']) : 0;
-      if ( $points_to_award <= 0 ) return; // Nada a creditar
+      if ( $points_to_award <= 0 ) return; 
 
       $user_id = $order->cliente_id;
       if ( empty( $user_id ) ) return;
 
-      // 1. Atualiza Saldo do Usuário (Meta)
+      // Atualiza Saldo do Usuário
       $current_points = (int) get_user_meta( $user_id, 'nativa_user_points', true );
       $new_balance = $current_points + $points_to_award;
       update_user_meta( $user_id, 'nativa_user_points', $new_balance );
 
-      // 2. Grava Extrato (Tabela SQL)
+      // Grava Extrato SQL
       $table_mov = $this->wpdb->prefix . 'nativa_fidelidade_movimentos';
       $this->wpdb->insert(
           $table_mov,
@@ -108,14 +101,11 @@ class ND_Automations {
           ['%d', '%s', '%d', '%d', '%s', '%d', '%s']
       );
 
-      // 3. Marca como Creditado no Pedido
+      // Marca como Creditado
       $meta['loyalty_awarded'] = true;
       $this->update_order_meta_json( $order->id, $meta );
   }
 
-  /**
-   * Estorna pontos se o pedido for cancelado.
-   */
   private function process_loyalty_revoke_sql( $order ) {
       $meta = json_decode($order->metadados_json, true) ?: [];
       
@@ -128,19 +118,17 @@ class ND_Automations {
       $user_id = $order->cliente_id;
       if ( empty( $user_id ) ) return;
 
-      // 1. Atualiza Saldo
       $current_points = (int) get_user_meta( $user_id, 'nativa_user_points', true );
       $new_balance = max(0, $current_points - $points_to_revoke);
       update_user_meta( $user_id, 'nativa_user_points', $new_balance );
 
-      // 2. Grava Extrato de Estorno
       $table_mov = $this->wpdb->prefix . 'nativa_fidelidade_movimentos';
       $this->wpdb->insert(
           $table_mov,
           [
               'cliente_id' => $user_id,
               'tipo'       => 'estorno', 
-              'pontos'     => -$points_to_revoke, // Valor negativo
+              'pontos'     => -$points_to_revoke, 
               'referencia_id' => $order->id,
               'descricao'  => "Estorno Pedido #{$order->id} (Cancelado)",
               'saldo_apos_movimento' => $new_balance,
@@ -149,7 +137,6 @@ class ND_Automations {
           ['%d', '%s', '%d', '%d', '%s', '%d', '%s']
       );
 
-      // 3. Remove flag
       $meta['loyalty_awarded'] = false;
       $this->update_order_meta_json( $order->id, $meta );
   }
@@ -179,35 +166,30 @@ class ND_Automations {
 
         if ( ! $txid ) continue;
 
-        // Consulta API
         $charge_details = ND_Sicredi_Helper::get_pix_charge( $txid );
 
         if ( ! is_wp_error( $charge_details ) && isset( $charge_details['status'] ) && $charge_details['status'] === 'CONCLUIDA' ) {
             
-            // A. Atualiza Pagamento
+            // Atualiza Pagamento e Pedido
             $this->wpdb->update( 
                 $table_pagamentos, 
                 ['status' => 'aprovado', 'data_pagamento' => current_time('mysql')], 
                 ['id' => $row->pagamento_id] 
             );
-
-            // B. Atualiza Pedido
             $this->wpdb->update( 
                 $table_pedidos, 
                 ['status' => 'recebido'], 
                 ['id' => $row->id] 
             );
 
-            // C. Dispara Automações (Push de Recebido)
+            // Dispara Automações
             $this->handle_status_change( $row->id, 'recebido' );
-            
-            // D. Notifica Dashboard (Novo Pedido Confirmado)
             $this->send_new_order_push_to_dashboard( $row->id );
         }
     }
   }
 
-  // --- 4. PUSH NOTIFICATIONS (ONESIGNAL) ---
+  // --- 4. PUSH NOTIFICATIONS ---
 
   public function send_new_order_push_to_dashboard( $order_id, $customer_name = null, $order_total = null ) {
       if ( $customer_name === null || $order_total === null ) {
@@ -224,7 +206,7 @@ class ND_Automations {
           "Novo Pedido #{$order_id}",
           "{$customer_name} fez um pedido de {$order_total}. Toque para ver.",
           ['order_id' => $order_id, 'type' => 'new_order'],
-          ['All'] // Segmento Admin/Cozinha
+          ['All'] // Segmento Admin
       );
   }
 
@@ -235,7 +217,6 @@ class ND_Automations {
       $user_id = $order->cliente_id;
       if ( empty( $user_id ) ) return;
 
-      // Recupera Player IDs do OneSignal salvos no User Meta
       $player_ids = get_user_meta( $user_id, 'nativa_onesignal_player_ids', true );
       if ( empty( $player_ids ) || ! is_array( $player_ids ) ) return;
 
@@ -310,7 +291,7 @@ class ND_Automations {
               'Authorization' => 'Basic ' . $this->rest_key
           ),
           'body'    => json_encode( $fields ),
-          'timeout' => 5, // Fire and forget rápido
+          'timeout' => 5,
           'method'  => 'POST',
           'sslverify' => false 
       );
@@ -323,10 +304,13 @@ class ND_Automations {
   private function log_status_change_sql( $order, $status ) {
       $meta = json_decode($order->metadados_json, true) ?: [];
       $logs = $meta['status_log'] ?? [];
+      
+      // CRUCIAL: Salva como INT (segundos) para o JS entender corretamente
       $logs[] = [
           'status' => $status,
-          'timestamp' => current_time('mysql')
+          'timestamp' => current_time('timestamp', true) 
       ];
+      
       $meta['status_log'] = $logs;
       $this->update_order_meta_json( $order->id, $meta );
   }
